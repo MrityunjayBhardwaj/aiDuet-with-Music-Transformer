@@ -1,0 +1,5 @@
+tensorflow==1.15.2
+Magenta==2.1.0
+Flask==0.12
+gunicorn==19.6.0
+gsutil==4.52
