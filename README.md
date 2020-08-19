@@ -84,10 +84,10 @@ Multisampled piano from [Salamander Grand Piano V3](https://archive.org/details/
 
 String sounds from [MIDI.js Soundfonts](https://github.com/gleitz/midi-js-soundfonts) generated from [FluidR3_GM.sf2](http://www.musescore.org/download/fluid-soundfont.tar.gz) ([Creative Commons Attribution 3.0](https://creativecommons.org/licenses/by/3.0/)).
 
-## LICENSE
+## LICENSE from the original repo
 
 Copyright 2016 Google Inc.
-
+s
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
