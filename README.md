@@ -6,8 +6,6 @@ A piano that responds to you.
 
 This is the port of ai-duet experiment by google: https://github.com/googlecreativelab/aiexperiments-ai-duet where, instead of using performanceRNN we are using ![Music Transformer](https://magenta.tensorflow.org/music-transformer)
 
-This is not an official Google product.
-
 ## CREDITS from original repo
 
 The original ai-duet experiment was Built by [Yotam Mann](https://github.com/tambien) with friends on the Magenta and Creative Lab teams at Google. It uses [TensorFlow](https://tensorflow.org), [Tone.js](https://github.com/Tonejs/Tone.js) and open-source tools from the [Magenta](https://magenta.tensorflow.org/) project. Check out more at [A.I. Experiments](https://aiexperiments.withgoogle.com).
@@ -19,7 +17,7 @@ The original ai-duet experiment was Built by [Yotam Mann](https://github.com/tam
 git clone https://github.com/MrityunjayBhardwaj/aiDuet-with-Music-Transformer.git
 ```
 
--> Create and activating a virtual environment ( or use the existing one if you are feeling adventurous :P )
+* Create and activating a virtual environment ( or use the existing one if you are feeling adventurous :P )
 
     if you are using conda then you can simply run this command :-
 
@@ -35,14 +33,14 @@ git clone https://github.com/MrityunjayBhardwaj/aiDuet-with-Music-Transformer.gi
     conda activate myenv
     ```
 
--> for installing the rest of the dependencies :- simply go to the sever folder and install all the dependencies from requirements.txt
+* for installing the rest of the dependencies :- simply go to the sever folder and install all the dependencies from requirements.txt
 
 ```bash
  cd server
  pip install -r requirements.txt
 ```
 
--> the checkpoints for music Transformer can be found here:-
+* the checkpoints for music Transformer can be found here:-
 
     ```bash
     gsutil -q -m cp -r gs://magentadata/models/music_transformer/primers/* ./assets/checkpoints
@@ -55,7 +53,7 @@ git clone https://github.com/MrityunjayBhardwaj/aiDuet-with-Music-Transformer.gi
     ```
 
 
--> Then finally, to build and install the front-end Javascript code, first make sure you have [Node.js](https://nodejs.org) 6 installed. And then install of the dependencies of the project and build the code by typing the following in the terminal: 
+* Then, to build and install the front-end Javascript code, first make sure you have [Node.js](https://nodejs.org) 6 installed. And then install of the dependencies of the project and build the code by typing the following in the terminal: 
 
 
 ```bash
@@ -64,8 +62,11 @@ npm install
 npm run build
 ```
 
+Finally, to run this webapp simply type ( and hope for the best):
 
-
+```bash
+python server.py
+```
 
 You can then play with A.I. Duet at [localhost:8080](http://localhost:8080).
 
