@@ -14,20 +14,28 @@ The original ai-duet experiment was Built by [Yotam Mann](https://github.com/tam
 
 ### INSTALLATION
 
--> clone this repo in your desired foler
+-> Clone this repo in your desired folder
 ```bash
 git clone https://github.com/MrityunjayBhardwaj/aiDuet-with-Music-Transformer.git
 ```
 
--> Create a virtual environment ( or use the existing one if you are feeling adventurous :P )
+-> Create and activating a virtual environment ( or use the existing one if you are feeling adventurous :P )
 
-if you are using conda then you can simply run this command :-
+    if you are using conda then you can simply run this command :-
 
-```bash
-conda create --name myenv python=3.7.7
-```
+    ```bash
+    conda create --name myenv python=3.7.7
+    ```
 
--> for installing the rest of the dependencies :- simply go to the static folder and install all the dependencies from requirements.txt
+    this will create a new virtual environment called myenv with python=3.7.7 preinstalled
+
+    after that, you can activate this virtual environment by simply running this command:
+
+    ```bash
+    conda activate myenv
+    ```
+
+-> for installing the rest of the dependencies :- simply go to the sever folder and install all the dependencies from requirements.txt
 
 ```bash
  cd server
@@ -36,18 +44,18 @@ conda create --name myenv python=3.7.7
 
 -> the checkpoints for music Transformer can be found here:-
 
-```bash
-gsutil -q -m cp -r gs://magentadata/models/music_transformer/primers/* ./assets/checkpoints
-```
+    ```bash
+    gsutil -q -m cp -r gs://magentadata/models/music_transformer/primers/* ./assets/checkpoints
+    ```
 
-also, soundFont can be fetched using gsutil as well:
+    also, soundFont can be fetched using "gsutil" as well:
 
-```bash
-gsutil -q -m cp gs://magentadata/soundfonts/Yamaha-C5-Salamander-JNv5.1.sf2 ./assets/soundFonts
-```
+    ```bash
+    gsutil -q -m cp gs://magentadata/soundfonts/Yamaha-C5-Salamander-JNv5.1.sf2 ./assets/soundFonts
+    ```
 
 
-Then finally, to build and install the front-end Javascript code, first make sure you have [Node.js](https://nodejs.org) 6 installed. And then install of the dependencies of the project and build the code by typing the following in the terminal: 
+-> Then finally, to build and install the front-end Javascript code, first make sure you have [Node.js](https://nodejs.org) 6 installed. And then install of the dependencies of the project and build the code by typing the following in the terminal: 
 
 
 ```bash
