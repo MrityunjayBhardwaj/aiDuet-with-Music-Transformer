@@ -1,5 +1,6 @@
 
 import ctypes.util
+from pathlib import Path
 import numpy as np
 import os
 import tensorflow.compat.v1 as tf
@@ -20,9 +21,11 @@ tf.disable_v2_behavior()
 
 print('libraries are sucesfully imported :D')
 
+MODULE_ROOT = Path(__file__).resolve().parent.parent
+print(f'Module root: {MODULE_ROOT.absolute()}')
 # specifing paths
-SF2_PATH = '/home/mrityunjay/Documents/Projects/BitRate/aiDuetWithTransformer/assets/soundFonts/Yamaha-C5-Salamander-JNv5.1.sf2'
-save_midi_loc = '/home/mrityunjay/Documents/Projects/BitRate/aiDuetWithTransformer/assets/genMusic/unconditional.mid';
+SF2_PATH = str(MODULE_ROOT / 'assets' / 'soundFonts' / 'Yamaha-C5-Salamander-JNv5.1.sf2')
+save_midi_loc = str(MODULE_ROOT / 'assets' / 'genMusic' / 'unconditional.mid')
 SAMPLE_RATE = 16000
 
 
@@ -43,17 +46,18 @@ def decode(ids, encoder):
 
 # collections of some of the midi files ( for testing purposes)
 filenames = {
-    'C major arpeggio': '/home/mrityunjay/Documents/Projects/BitRate/aiDuetWithTransformer/assets/midi/c_major_arpeggio.mid',
-    'C major scale':    '/home/mrityunjay/Documents/Projects/BitRate/aiDuetWithTransformer/assets/midi/c_major_scale.mid',
-    'Clair de Lune':    '/home/mrityunjay/Documents/Projects/BitRate/aiDuetWithTransformer/assets/midi/clair_de_lune.mid',
+    'C major arpeggio': MODULE_ROOT / 'assets' / 'midi' / 'c_major_arpeggio.mid',
+    'C major scale':    MODULE_ROOT / 'assets' / 'midi' / 'c_major_scale.mid',
+    'Clair de Lune':    MODULE_ROOT / 'assets' / 'midi' / 'clair_de_lune.mid',
 }
+
 primer = 'C major scale'  # current selected track
 
 
 # setting things up and loading the checkpoint
 model_name = 'transformer'
 hparams_set = 'transformer_tpu'
-ckpt_path = '/home/mrityunjay/Documents/Projects/BitRate/aiDuetWithTransformer/assets/checkpoints/unconditional_model_16.ckpt'
+ckpt_path = str(MODULE_ROOT / 'assets' / 'checkpoints' / 'unconditional_model_16.ckpt')
 
 class PianoPerformanceLanguageModelProblem(score2perf.Score2PerfProblem):
   @property
