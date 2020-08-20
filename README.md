@@ -6,13 +6,16 @@ A piano that responds to you.
 
 This is the port of ai-duet experiment by google: https://github.com/googlecreativelab/aiexperiments-ai-duet where, instead of using performanceRNN we are using ![Music Transformer](https://magenta.tensorflow.org/music-transformer)
 
+> DISCLAIMER: This code is **super experimental**. please run it with a big grain of salt.
+
 ## CREDITS from original repo
 
 The original ai-duet experiment was Built by [Yotam Mann](https://github.com/tambien) with friends on the Magenta and Creative Lab teams at Google. It uses [TensorFlow](https://tensorflow.org), [Tone.js](https://github.com/Tonejs/Tone.js) and open-source tools from the [Magenta](https://magenta.tensorflow.org/) project. Check out more at [A.I. Experiments](https://aiexperiments.withgoogle.com).
 
-### INSTALLATION
 
--> Clone this repo in your desired folder
+## INSTALLATION
+
+* Clone this repo in your desired folder
 ```bash
 git clone https://github.com/MrityunjayBhardwaj/aiDuet-with-Music-Transformer.git
 ```
