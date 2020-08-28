@@ -377,24 +377,26 @@ class RollClass {
 			wireframe: true
     	});
 
+		//ambient: 0x050505,  specular: 0x555555
+		let phongMaterial = new THREE.MeshPhongMaterial( {color: 0x008080, shininess: 90 } );
 
-		this.ball = new THREE.Mesh(icosahedronGeometry, lambertMaterial);
+
+		this.ball = new THREE.Mesh(icosahedronGeometry, phongMaterial);
     	this.ball.position.set(this._camera.position.x + 400, this._camera.position.y + 300, 1);
     	this._scene.add(this.ball);
 
-    	let ambientLight = new THREE.AmbientLight(0xaaaaaa);
+    	let ambientLight = new THREE.AmbientLight(0xaaaaaa, 0.4);
     	this._scene.add(ambientLight);
 
     	let spotLight = new THREE.SpotLight(0xffffff);
     	spotLight.intensity = 0.9;
-    	spotLight.position.set(-10, 40, 20);
+    	spotLight.position.set(500, 500, - 1000);
     	spotLight.lookAt(this.ball);
     	spotLight.castShadow = true;
     	this._scene.add(spotLight);
 
 
-		window.camera = this._camera;
-
+        window.camera = this._camera;
 		//start the loop
 		this._lastUpdate = Date.now()
 		//this._boundLoop = this._loop.bind(this) render_ball
