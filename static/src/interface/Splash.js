@@ -23,9 +23,15 @@ class Splash extends events.EventEmitter{
 	constructor(container){
 
 		super()
+
 		const splash = this._splash = document.createElement('div')
 		splash.id = 'splash'
 		container.appendChild(splash)
+
+		const recordButton = document.createElement('div')
+		recordButton.id = 'btnRecordContainer'
+		recordButton.innerHTML = '<button class="button" id="btnRecord"> <span class="text">Record Audio</span></button>';
+		splash.appendChild(recordButton)
 
 		// the title
 		const titleContainer = document.createElement('div')

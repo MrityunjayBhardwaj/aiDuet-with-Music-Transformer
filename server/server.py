@@ -30,6 +30,7 @@ import json
 
 from flask import Flask
 app = Flask(__name__, static_url_path='', static_folder=os.path.abspath('../static'))
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 
 @app.route('/predict', methods=['POST'])
@@ -45,8 +46,21 @@ def predict():
     duration = float(request.args.get('duration'))
     print('setting retMidi')
     ret_midi = generate_midi(midi_data, 10)
-    return send_file(ret_midi, attachment_filename='return.mid', 
+    return send_file(ret_midi, attachment_filename='return.mid',
         mimetype='audio/midi', as_attachment=True)
+
+
+@app.route('/predict_raw', methods=['POST'])
+def predict_raw():
+    print('GOT.....')
+    print(request)
+
+    response = app.response_class(
+        response=json.dumps({'value': 'OK'}),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -55,4 +69,4 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=8080)
+    app.run(host='127.0.0.1', port=8080, debug=True)

@@ -22,11 +22,81 @@ import {Splash} from 'interface/Splash'
 import {About} from 'interface/About'
 import {Tutorial} from 'ai/Tutorial'
 import 'babel-polyfill'
+import {AIRaw} from "./ai/AIRaw";
+import events from "events";
 
 /////////////// SPLASH ///////////////////	
 
 const about = new About(document.body)
 const splash = new Splash(document.body)
+
+class Recorder {
+
+	constructor(ai){
+		this.ai = ai;
+		this.recorder = undefined;
+		this.btnRecord = undefined;
+		this.isRecording = false;
+		this.chunks = [];
+	}
+
+
+ init() {
+	this.btnRecord = document.getElementById("btnRecord");
+	this.btnRecord.addEventListener('click', () => {
+		// Things are broken on old ios
+		if (!navigator.mediaDevices) {
+			console.log('disabled')
+			this.btnRecord.disabled = true;
+			return;
+		}
+
+		if (this.isRecording) {
+			this.isRecording = false;
+			this.updateRecordBtn(true);
+			this.recorder.stop();
+		} else {
+			// Request permissions to record audio. Also this sometimes fails on Linux. I don't know.
+			if (this.recorder) {
+				this.isRecording = true;
+				this.recorder.start();
+			}
+			else {
+				navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
+					this.isRecording = true;
+					this.updateRecordBtn(false);
+					this.recorder = new window.MediaRecorder(stream);
+					this.recorder.ondataavailable = (e) => {
+						console.log("GOT DATA")
+						this.updateWorkingState(btnRecord);
+						//this.chunks.push(e.data);
+						this.transcribeFromFile(e.data)
+						this.chunks  = [];
+					};
+					this.recorder.start();
+				}, () => {
+					this.btnRecord.disabled = true;
+				});
+			}
+		}
+	});
+}
+
+	updateWorkingState(active) {
+	  active.classList.add('working');
+	}
+
+	updateRecordBtn(defaultState) {
+	  const el = this.btnRecord.firstElementChild;
+	  el.textContent = defaultState ? 'Record Audio' : 'Stop';
+	}
+
+	transcribeFromFile(blob) {
+		console.log("Transcribing " + blob)
+		this.ai.submit(blob)
+	}
+}
+
 splash.on('click', () => {
 	keyboard.activate()
 	tutorial.start()
@@ -76,7 +146,13 @@ keyboard.on('keyUp', (note) => {
 
 /////////////// AI ///////////////////
 
-const ai = new AI()
+const ai = new AIRaw()
+
+const recorder = new Recorder(ai)
+console.log("GOT REECODER")
+
+recorder.init();
+
 
 ai.on('keyDown', (note, time) => {
 	sound.keyDown(note, time, true)
