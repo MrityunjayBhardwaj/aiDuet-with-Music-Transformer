@@ -39,7 +39,8 @@ class KeyboardElement extends events.EventEmitter {
 
 		this._pointersDown = {}
 
-		this.resize(lowest, octaves)
+		//this.resize(lowest, octaves)
+		console.log("Here")
 
 		Roll.appendTo(container)
 
@@ -48,6 +49,7 @@ class KeyboardElement extends events.EventEmitter {
 	}
 
 	resize(lowest, octaves){
+		/*
 		this._keys = {}
 		// clear the previous ones
 		this._container.innerHTML = ''
@@ -76,6 +78,7 @@ class KeyboardElement extends events.EventEmitter {
 			this._keys[i] = key
 
 		}
+		*/
 	}
 
 	_absorbEvent(event) {

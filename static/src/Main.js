@@ -35,65 +35,25 @@ class Recorder {
 	constructor(ai){
 		this.ai = ai;
 		this.recorder = undefined;
-		this.btnRecord = undefined;
 		this.isRecording = false;
-		this.chunks = [];
 	}
 
 
  init() {
-	this.btnRecord = document.getElementById("btnRecord");
-	this.btnRecord.addEventListener('click', () => {
-		// Things are broken on old ios
-		if (!navigator.mediaDevices) {
-			console.log('disabled')
-			this.btnRecord.disabled = true;
-			return;
-		}
-
-		if (this.isRecording) {
-			this.isRecording = false;
-			this.updateRecordBtn(true);
-			this.recorder.stop();
-		} else {
-			// Request permissions to record audio. Also this sometimes fails on Linux. I don't know.
-			if (this.recorder) {
-				this.isRecording = true;
-				this.recorder.start();
-			}
-			else {
-				navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
-					this.isRecording = true;
-					this.updateRecordBtn(false);
-					this.recorder = new window.MediaRecorder(stream);
-					this.recorder.ondataavailable = (e) => {
-						console.log("GOT DATA")
-						this.updateWorkingState(this.btnRecord);
-						//this.chunks.push(e.data);
-						this.transcribeFromFile(e.data)
-					};
-					this.recorder.start();
-					window.setInterval(() => {
+	navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
+		this.recorder = new window.MediaRecorder(stream);
+		this.recorder.ondataavailable = (e) => {
+			console.log("GOT DATA")
+			this.transcribeFromFile(e.data)
+		};
+		this.recorder.start();
+		this.isRecording = true;
+		window.setInterval(() => {
 						if (this.isRecording)
 						{this.recorder.requestData()}
 					}, 5000);
-				}, () => {
-					this.btnRecord.disabled = true;
-				});
-			}
-		}
-	});
-}
-
-
-	updateWorkingState(active) {
-	  active.classList.add('working');
-	}
-
-	updateRecordBtn(defaultState) {
-	  const el = this.btnRecord.firstElementChild;
-	  el.textContent = defaultState ? 'Record Audio' : 'Stop';
-	}
+		})
+ }
 
 	transcribeFromFile(blob) {
 		console.log("Transcribing " + blob)
@@ -101,11 +61,18 @@ class Recorder {
 	}
 }
 
+const ai = new AIRaw()
+const recorder = new Recorder(ai)
+
+
 splash.on('click', () => {
+	console.log("GOT INIT RECORDER")
+	recorder.init();
 	keyboard.activate()
 	tutorial.start()
 	about.showButton()
 })
+
 splash.on('about', () => {
 	about.open(true)
 })
@@ -149,14 +116,6 @@ keyboard.on('keyUp', (note) => {
 })
 
 /////////////// AI ///////////////////
-
-const ai = new AIRaw()
-
-const recorder = new Recorder(ai)
-console.log("GOT REECODER")
-
-recorder.init();
-
 
 ai.on('keyDown', (note, time) => {
 	sound.keyDown(note, time, true)
