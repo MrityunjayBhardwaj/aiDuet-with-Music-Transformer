@@ -17,14 +17,14 @@
 import events from 'events'
 import 'style/keyboard.css'
 import 'pepjs'
-import {Roll} from 'roll/Roll'
+//import {Roll} from 'roll/Roll'
 import {Note} from 'keyboard/Note'
 
 const offsets = [0, 0.5, 1, 1.5, 2, 3, 3.5, 4, 4.5, 5, 5.5, 6]
 
 class KeyboardElement extends events.EventEmitter {
 
-	constructor(container, lowest=36, octaves=4){
+	constructor(container, roll, lowest=36, octaves=4){
 		super()
 		this._container = document.createElement('div')
 		this._container.id = 'keyboard'
@@ -42,7 +42,7 @@ class KeyboardElement extends events.EventEmitter {
 		//this.resize(lowest, octaves)
 		console.log("Here")
 
-		Roll.appendTo(container)
+		roll.appendTo(container)
 
 		this._aiNotes = {}
 		this._notes = {}

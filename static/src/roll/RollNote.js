@@ -15,7 +15,7 @@
  */
 
 const THREE = require('three')
-import {Roll} from 'roll/Roll'
+//import {Roll} from 'roll/Roll'
 
 const geometry = new THREE.PlaneBufferGeometry( 1, 1, 1 )
 const material = new THREE.MeshBasicMaterial( {color: 0x1FB7EC, side: THREE.BackSide} )
@@ -34,7 +34,7 @@ export class RollNote {
 		this.plane.position.x = box.left  + margin + width / 2
 		this.plane.position.y = Roll.bottom + initialScaling / 2
 		this.bottom = Roll.bottom
-		Roll.add(this.plane)
+		//Roll.add(this.plane)
 	}
 	noteOff(bottom){
 		const dist = Roll.bottom - this.bottom

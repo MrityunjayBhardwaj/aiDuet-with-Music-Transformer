@@ -23,7 +23,7 @@ import {Midi} from 'keyboard/Midi'
 import Buffer from 'Tone/core/Buffer'
 
 class Keyboard extends events.EventEmitter{
-	constructor(container){
+	constructor(container, roll){
 		super()
 
 		this._container = container
@@ -47,7 +47,7 @@ class Keyboard extends events.EventEmitter{
 		/**
 		 * The piano interface
 		 */
-		this._keyboardInterface = new KeyboardElement(container, 48, 2)
+		this._keyboardInterface = new KeyboardElement(container, roll, 48, 2)
 		this._keyboardInterface.on('keyDown', (note) => {
 			this.keyDown(note)
 			this._emitKeyDown(note)

@@ -401,7 +401,21 @@ class RollClass {
         this._boundLoop = this.render_ball.bind(this)
 		this._boundLoop()
 		window.addEventListener('resize', this._resize.bind(this))
+        this.ready = false;
+
 	}
+
+	set_stream(stream){
+	    console.log(stream)
+        this.context = new AudioContext();
+		let src = this.context.createMediaStreamSource(stream);
+        this.analyser = this.context.createAnalyser();
+        src.connect(this.analyser);
+        this.analyser.fftSize = 512;
+        let bufferLength = this.analyser.frequencyBinCount;
+        this.dataArray = new Uint8Array(bufferLength);
+        this.ready = true
+    }
 
 	get bottom(){
 		return this._element.clientHeight + this._camera.position.y
@@ -420,17 +434,20 @@ class RollClass {
 
 	// https://medium.com/@mag_ops/music-visualiser-with-three-js-web-audio-api-b30175e7b5ba
 	makeRoughBall(mesh, bassFr, treFr) {
+	        let noise = new SimplexNoise()
   			mesh.geometry.vertices.forEach((vertex, i) => {
-  			let amp = 3;
+  			let amp = 10;
 			let offset = mesh.geometry.parameters.radius;
     		let time = window.performance.now();
     		vertex.normalize();
-    		let distance = (offset + bassFr ) + new SimplexNoise().noise3d(
-          	vertex.x + time * 0.00007,
-          	vertex.y + time * 0.00008,
-          	vertex.z + time * 0.00009
-   			 ) * amp * treFr;
-        vertex.multiplyScalar(distance);
+    		let noise_3d = noise.noise3d(
+                vertex.x + time * 0.00007,
+                vertex.y + time * 0.00008,
+                vertex.z + time * 0.00009
+   			 )
+
+    		let distance = (offset + bassFr) + noise_3d * amp * treFr;
+            vertex.multiplyScalar(distance);
   });
   		mesh.geometry.verticesNeedUpdate = true;
   		mesh.geometry.normalsNeedUpdate = true;
@@ -517,23 +534,24 @@ class RollClass {
 }
 
 	render_ball() {
-	  let  dataArray = [1, 2, 3,4 ,5 , 6, 7, 4, 34 ,34 ,34, 34]
-      let lowerHalfArray = dataArray.slice(0, (dataArray.length/2) - 1);
-      let upperHalfArray = dataArray.slice((dataArray.length/2) - 1, dataArray.length - 1);
+	    if (this.ready) {
+            this.analyser.getByteFrequencyData(this.dataArray);
+            let lowerHalfArray = this.dataArray.slice(0, (this.dataArray.length / 2) - 1);
+            let upperHalfArray = this.dataArray.slice((this.dataArray.length / 2) - 1, this.dataArray.length - 1);
 
-      let lowerMax = this.max(lowerHalfArray);
-      let upperAvg = this.avg(upperHalfArray);
+            let lowerMax = this.max(lowerHalfArray);
+            let upperAvg = this.avg(upperHalfArray);
 
-      let lowerMaxFr = lowerMax / lowerHalfArray.length;
-      let upperAvgFr = upperAvg / upperHalfArray.length;
+            let lowerMaxFr = lowerMax / lowerHalfArray.length;
+            let upperAvgFr = upperAvg / upperHalfArray.length;
 
-      this.makeRoughBall(this.ball, this.modulate(Math.pow(lowerMaxFr, 0.8), 0, 1, 0, 8), this.modulate(upperAvgFr, 0, 1, 0, 4));
+            this.makeRoughBall(this.ball, this.modulate(Math.pow(lowerMaxFr, 0.8), 0, 1, 0, 30), this.modulate(upperAvgFr, 0, 1, 0, 20));
 
-
+        }
       this._renderer.render(this._scene, camera);
       requestAnimationFrame(this._boundLoop);
     }
 }
 
-const Roll = new RollClass()
-export {Roll}
+//const Roll = new RollClass()
+export {RollClass}

@@ -23,6 +23,7 @@ import {About} from 'interface/About'
 import {Tutorial} from 'ai/Tutorial'
 import 'babel-polyfill'
 import {AIRaw} from "./ai/AIRaw";
+import {RollClass} from 'roll/Roll'
 import events from "events";
 
 /////////////// SPLASH ///////////////////	
@@ -39,8 +40,11 @@ class Recorder {
 	}
 
 
- init() {
+ init(roll) {
 	navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
+		console.log('CLONING STEAM')
+		roll.set_stream(stream.clone())
+
 		this.recorder = new window.MediaRecorder(stream);
 		this.recorder.ondataavailable = (e) => {
 			console.log("GOT DATA")
@@ -52,7 +56,7 @@ class Recorder {
 						if (this.isRecording)
 						{this.recorder.requestData()}
 					}, 5000);
-		})
+		});
  }
 
 	transcribeFromFile(blob) {
@@ -63,11 +67,11 @@ class Recorder {
 
 const ai = new AIRaw()
 const recorder = new Recorder(ai)
-
+const roll = new RollClass()
 
 splash.on('click', () => {
 	console.log("GOT INIT RECORDER")
-	recorder.init();
+	recorder.init(roll);
 	keyboard.activate()
 	tutorial.start()
 	about.showButton()
@@ -98,7 +102,7 @@ container.id = 'container'
 document.body.appendChild(container)
 
 const glow = new Glow(container)
-const keyboard = new Keyboard(container)
+const keyboard = new Keyboard(container, roll)
 
 const sound = new Sound()
 sound.load()
