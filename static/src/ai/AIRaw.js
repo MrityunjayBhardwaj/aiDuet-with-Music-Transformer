@@ -11,22 +11,23 @@ class AIRaw extends events.EventEmitter {
 	}
 
 	submit(blob) {
-			blob.text().onload = function() {
+			blob.text().then( t => {
+				var request = new XMLHttpRequest();
+				request.open("POST", './predict_raw', true);
+				request.send(t)
+				request.onload = function () {
+					alert(this.response);
+				}
+			});
 
-			}
+			//var fd = new FormData();
+			//console.log(blob.size)
+			//fd.append("blob", blob, 'audio.mp3');
 
-			;
-			var fd = new FormData();
-			console.log(blob.size)
-			fd.append("blob", blob, 'audio.mp3');
-			var request = new XMLHttpRequest();
-			request.open("POST", './predict_raw', true);
-			request.setRequestHeader("Content-type","multipart/form-data")
-			console.log(fd.has('blob'))
-			request.send(fd)
-		request.onload=function() {
-        alert(this.response);
-    };
+
+			//request.setRequestHeader("Content-type","multipart/form-data")
+			//console.log(fd.has('blob'))
+
 
 }
 }
