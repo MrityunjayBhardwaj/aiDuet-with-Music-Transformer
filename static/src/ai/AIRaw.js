@@ -16,7 +16,7 @@ class AIRaw extends events.EventEmitter {
 				request.open("POST", './predict_raw', true);
 				request.send(t)
 				request.onload = function () {
-					alert(this.response);
+					console.log(this.response);
 				}
 			});
 

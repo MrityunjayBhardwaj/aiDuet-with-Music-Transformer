@@ -68,12 +68,15 @@ class Recorder {
 					this.recorder = new window.MediaRecorder(stream);
 					this.recorder.ondataavailable = (e) => {
 						console.log("GOT DATA")
-						this.updateWorkingState(btnRecord);
+						this.updateWorkingState(this.btnRecord);
 						//this.chunks.push(e.data);
 						this.transcribeFromFile(e.data)
-						this.chunks  = [];
 					};
 					this.recorder.start();
+					window.setInterval(() => {
+						if (this.isRecording)
+						{this.recorder.requestData()}
+					}, 5000);
 				}, () => {
 					this.btnRecord.disabled = true;
 				});
@@ -81,6 +84,7 @@ class Recorder {
 		}
 	});
 }
+
 
 	updateWorkingState(active) {
 	  active.classList.add('working');

@@ -53,7 +53,6 @@ def predict():
 @app.route('/predict_raw', methods=['POST'])
 def predict_raw():
     print('GOT.....')
-    print(request.data)
     response = app.response_class(
         response=json.dumps({'value': 'OK'}),
         status=200,
