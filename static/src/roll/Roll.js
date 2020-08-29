@@ -357,11 +357,13 @@ class RollClass {
 		this._element = document.createElement('div')
 		this._element.id = 'roll'
 
-		this._camera = new THREE.OrthographicCamera(0, 1, 1, 0, 1, 1000)
-		this._camera.position.z = 1
-		this._camera.lookAt(new THREE.Vector3(0, 0, 0))
+		this._scene = new THREE.Scene();
 
-		this._scene = new THREE.Scene()
+		this._camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000); //new THREE.OrthographicCamera(0, 1, 1, 0, 1, 1000)
+		//this._camera.position.z = 1
+		this._camera.position.set(0,0,100);
+		this._camera.lookAt(this._scene.position);//.lookAt(new THREE.Vector3(0, 0, 0))
+
 
 		this._renderer = new THREE.WebGLRenderer({alpha: true})
 		this._renderer.setClearColor(0x000000, 0)
@@ -371,7 +373,7 @@ class RollClass {
 
 		this._currentNotes = {}
 
-		let icosahedronGeometry = new THREE.IcosahedronGeometry(200, 4);
+		let icosahedronGeometry = new THREE.IcosahedronGeometry(10, 4);//new THREE.IcosahedronGeometry(200, 4);
 		let lambertMaterial = new THREE.MeshLambertMaterial({
 			color: 0x008080,
 			wireframe: true
@@ -380,18 +382,30 @@ class RollClass {
 		//ambient: 0x050505,  specular: 0x555555
 		let phongMaterial = new THREE.MeshPhongMaterial( {color: 0x008080, shininess: 90 } );
 
+		this.group = new THREE.Group();
 
 		this.ball = new THREE.Mesh(icosahedronGeometry, phongMaterial);
-    	this.ball.position.set(this._camera.position.x + 400, this._camera.position.y + 300, 1);
-    	this._scene.add(this.ball);
+    	this.ball.position.set(this._camera.position.x - 30, 0, 0); //set(this._camera.position.x + 400, this._camera.position.y + 300, 1);
+
+
+    	let icosahedronGeometry2 = new THREE.IcosahedronGeometry(10, 4);
+    	let phongMaterial2= new THREE.MeshPhongMaterial( {color: 0xFFA500, shininess: 90 } );
+    	this.ball2 = new THREE.Mesh(icosahedronGeometry2, phongMaterial2);
+    	this.ball2.position.set(this._camera.position.x + 30, 0, 0);
+
+    	this.group.add(this.ball);
+    	this.group.add(this.ball2);
+
+    	this._scene.add(this.group);
 
     	let ambientLight = new THREE.AmbientLight(0xaaaaaa, 0.4);
     	this._scene.add(ambientLight);
 
     	let spotLight = new THREE.SpotLight(0xffffff);
     	spotLight.intensity = 0.9;
-    	spotLight.position.set(500, 500, - 1000);
-    	spotLight.lookAt(this.ball);
+    	spotLight.position.set(0, 0, 70); //spotLight.position.set(500, 500, - 1000);
+    	//spotLight.lookAt(this.ball);
+		spotLight.lookAt(0, 0, 0);
     	spotLight.castShadow = true;
     	this._scene.add(spotLight);
 
@@ -438,14 +452,15 @@ class RollClass {
 	makeRoughBall(mesh, bassFr, treFr) {
 	        let noise = new SimplexNoise()
   			mesh.geometry.vertices.forEach((vertex, i) => {
-  			let amp = 10;
+  			let amp = 7;
 			let offset = mesh.geometry.parameters.radius;
     		let time = window.performance.now();
     		vertex.normalize();
+    		let rf = 0.00001;
     		let noise_3d = noise.noise3d(
-                vertex.x + time * 0.00007,
-                vertex.y + time * 0.00008,
-                vertex.z + time * 0.00009
+                vertex.x + time * 0.00007 * rf * 7,
+                vertex.y + time * 0.00008 * rf * 8,
+                vertex.z + time * rf * 9
    			 )
 
     		let distance = (offset + bassFr) + noise_3d * amp * treFr;
@@ -547,10 +562,11 @@ class RollClass {
             let lowerMaxFr = lowerMax / lowerHalfArray.length;
             let upperAvgFr = upperAvg / upperHalfArray.length;
 
-            this.makeRoughBall(this.ball, this.modulate(Math.pow(lowerMaxFr, 0.8), 0, 1, 0, 30), this.modulate(upperAvgFr, 0, 1, 0, 20));
-
+            this.makeRoughBall(this.ball, this.modulate(Math.pow(lowerMaxFr, 0.8), 0, 1, 0, 8), this.modulate(upperAvgFr, 0, 1, 0, 4));
+            this.makeRoughBall(this.ball2, this.modulate(Math.pow(lowerMaxFr, 0.8), 0, 1, 0, 8), this.modulate(upperAvgFr, 0, 1, 0, 4));
         }
       this._renderer.render(this._scene, camera);
+	  //  this.group.rotation.y += 0.005;
       requestAnimationFrame(this._boundLoop);
     }
 }
