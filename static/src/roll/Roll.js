@@ -380,7 +380,7 @@ class RollClass {
     	});
 
 		//ambient: 0x050505,  specular: 0x555555
-		let phongMaterial = new THREE.MeshPhongMaterial( {color: 0x008080, shininess: 90 } );
+		let phongMaterial = new THREE.MeshPhongMaterial( {color: 0xFF00FF, shininess: 90 } );
 
 		this.group = new THREE.Group();
 
@@ -389,7 +389,7 @@ class RollClass {
 
 
     	let icosahedronGeometry2 = new THREE.IcosahedronGeometry(10, 4);
-    	let phongMaterial2= new THREE.MeshPhongMaterial( {color: 0xFFA500, shininess: 90 } );
+    	let phongMaterial2= new THREE.MeshPhongMaterial( {color: 0x9400D3, shininess: 90 } );
     	this.ball2 = new THREE.Mesh(icosahedronGeometry2, phongMaterial2);
     	this.ball2.position.set(this._camera.position.x + 30, 0, 0);
 

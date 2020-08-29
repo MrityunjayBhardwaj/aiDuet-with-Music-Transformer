@@ -46,7 +46,7 @@ class Splash extends events.EventEmitter{
 		const subTitle = document.createElement('div')
 		subTitle.id = 'subTitle'
 		titleContainer.appendChild(subTitle)
-		subTitle.textContent = 'A piano that responds to you.'
+		subTitle.textContent = 'Make some music with AI.'
 
 		this._clicked = false
 		const loader = this._loader = new Loader(titleContainer)
@@ -58,11 +58,11 @@ class Splash extends events.EventEmitter{
 
 		const howItWorks = document.createElement('div')
 		howItWorks.id = 'howItWorks'
-		titleContainer.appendChild(howItWorks)
-		howItWorks.textContent = 'How it works'
-		howItWorks.addEventListener('click', () => {
-			this.emit('about')
-		})
+		//titleContainer.appendChild(howItWorks)
+		//howItWorks.textContent = 'How it works'
+		//howItWorks.addEventListener('click', () => {
+		//	this.emit('about')
+		//})
 
 		const badges = document.createElement('div')
 		badges.id = 'badges'
