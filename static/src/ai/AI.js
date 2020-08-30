@@ -45,14 +45,14 @@ class AI extends events.EventEmitter{
 			this._newTrack()
 			let endTime = request.duration
 			//shorten the request if it's too long
-			if (endTime > 5){
-				request = request.slice(request.duration - 5)
+			if (endTime > 8){
+				request = request.slice(request.duration - 8)
 				endTime = request.duration
 			}
 			// let additional = endTime
 			// additional = Math.min(additional, 8)
 			// additional = Math.max(additional, 1)
-			console.log('total time');
+			console.log(endTime);
 			console.log('starting the request');
 			request.load(`./predict`, JSON.stringify(request.toArray()), 'POST').then((response) => {
 
@@ -87,13 +87,15 @@ class AI extends events.EventEmitter{
 		delete this._heldNotes[note]
 		// send something if there are no events for a moment
 		if (Object.keys(this._heldNotes).length === 0){
-			if (this._lastPhrase !== -1 && Date.now() - this._lastPhrase > 3000){
+			if (this._lastPhrase !== -1 && Date.now() - this._lastPhrase > 10000){
 				//just send it
+				console.log(Date.now() - this._lastPhrase)
 				this.send()
 			} else {
 				this._sendTimeout = setTimeout(this.send.bind(this), 600 + (time - Tone.now()) * 1000)
 			}
 		}
+		this._lastPhrase = Date.now()
 	}
 }
 

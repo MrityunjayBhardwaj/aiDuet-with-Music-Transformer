@@ -25,6 +25,7 @@ SF2_PATH = '../assets/soundFonts/Yamaha-C5-Salamander-JNv5.1.sf2'
 partial_midi_loc = '../assets/genMusic/partial.mid'
 total_midi_loc = '../assets/genMusic/total.mid'
 
+
 SAMPLE_RATE = 16000
 
 
@@ -87,7 +88,7 @@ estimator = trainer_lib.create_estimator(
 global targets
 global decode_length
 
-def generate_midi(midi_data):
+def generate_midi(prime_loc):
 
     # Create input generator (so we can adjust priming and
     # decode length on the fly).
@@ -114,7 +115,7 @@ def generate_midi(midi_data):
     _ = next(unconditional_samples)
 
     # convert our input midi to note sequence.
-    prime_ns = note_seq.midi_io.midi_to_sequence_proto(midi_data)
+    prime_ns = note_seq.midi_file_to_note_sequence(prime_loc)
 
     # Handle sustain pedal in the primer.
     primer_ns = note_seq.apply_sustain_control_changes(prime_ns)

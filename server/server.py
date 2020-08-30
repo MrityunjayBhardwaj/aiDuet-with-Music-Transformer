@@ -1,4 +1,4 @@
-# 
+    # 
 # Copyright 2016 Google Inc.
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,21 +30,32 @@ import json
 
 from flask import Flask
 app = Flask(__name__, static_url_path='', static_folder=os.path.abspath('../static'))
-
+prime_loc = '../assets/genMusic/prime.mid'
 
 @app.route('/predict', methods=['POST'])
 def predict():
     print('predicting.....')
     now = time.time()
+    print(request.data)
+    values = json.loads(request.data)
+    # print(values)
+    # for v in values:
+    #     print(v)
+    # midi_data = pretty_midi.PrettyMIDI(StringIO(''.join(chr(v) for v in values)))
+    # midi_data = pretty_midi.PrettyMIDI(prime_loc)
     values = json.loads(request.data)
     print('creating midi data', values)
     valuesStr = (''.join(chr(v) for v in values))
     valBytes = BytesIO(bytes(valuesStr, 'latin1'))
+    
     midi_data = pretty_midi.PrettyMIDI(valBytes)
+    for note in midi_data.instruments[0].notes:
+        note.velocity=64
+    midi_data.write(prime_loc)
     # print('setting duration')
     # duration = float(request.args.get('duration'))
     print('setting retMidi')
-    ret_midi = generate_midi(midi_data)
+    ret_midi = generate_midi(prime_loc)
     return send_file(ret_midi, attachment_filename='return.mid', 
         mimetype='audio/midi', as_attachment=True)
 
