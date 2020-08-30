@@ -18,6 +18,7 @@ import Buffer from 'Tone/core/Buffer'
 import 'style/splash.css'
 import events from 'events'
 import Loader from 'interface/Loader'
+import audioLoader from 'interface/audioLoader'
 
 class Splash extends events.EventEmitter{
 	constructor(container){
@@ -48,6 +49,14 @@ class Splash extends events.EventEmitter{
 			splash.classList.add('disappear')
 			this._clicked = true
 			this.emit('click')
+		})
+
+		// loader for audio2Midi
+		const aLoader = this._loader = new audioLoader(titleContainer)
+		aLoader.on('click', () => {
+			splash.classList.add('disappear')
+			this._clicked = true
+			this.emit('audio')
 		})
 
 		const howItWorks = document.createElement('div')
