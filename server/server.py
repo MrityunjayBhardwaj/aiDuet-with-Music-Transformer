@@ -101,6 +101,10 @@ def predict_frames():
 def index():
     return send_file('../static/index.html')
 
+@app.route('/fog', methods=['GET', 'POST'])
+def fog():
+    return send_file('../static/images/smoke.png')
+
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8080, debug=True)

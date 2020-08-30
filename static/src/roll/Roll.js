@@ -358,17 +358,22 @@ class RollClass {
 		this._element.id = 'roll'
 
 		this._scene = new THREE.Scene();
+		// could be 1, 10000, 0.1, 1000
+		this._camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.5, 10000); //new THREE.OrthographicCamera(0, 1, 1, 0, 1, 1000)
+		// camera.position.z = 1;
+	this._camera.rotation.x = 1.16;
+	this._camera.rotation.y = -0.12;
+	this._camera.rotation.z = 0.27;
 
-		this._camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000); //new THREE.OrthographicCamera(0, 1, 1, 0, 1, 1000)
-		//this._camera.position.z = 1
-		this._camera.position.set(0,0,100);
-		this._camera.lookAt(this._scene.position);//.lookAt(new THREE.Vector3(0, 0, 0))
+
+		//this._camera.position.set(0,0,100);
+		//this._camera.lookAt(this._scene.position);//.lookAt(new THREE.Vector3(0, 0, 0))
 
 
-		this._renderer = new THREE.WebGLRenderer({alpha: true})
-		this._renderer.setClearColor(0x000000, 0)
+		this._renderer = new THREE.WebGLRenderer() //{alpha: true}
+		//this._renderer.setClearColor(0x000000, 0)
 		this._renderer.setPixelRatio( window.devicePixelRatio )
-		this._renderer.sortObjects = false
+		//this._renderer.sortObjects = false
 		this._element.appendChild(this._renderer.domElement)
 
 		this._currentNotes = {}
@@ -396,9 +401,10 @@ class RollClass {
     	this.group.add(this.ball);
     	this.group.add(this.ball2);
 
-    	this._scene.add(this.group);
 
-    	let ambientLight = new THREE.AmbientLight(0xaaaaaa, 0.4);
+    	//this._scene.add(this.group);
+
+    	let ambientLight = new THREE.AmbientLight(0x555555);
     	this._scene.add(ambientLight);
 
     	let spotLight = new THREE.SpotLight(0xffffff);
@@ -407,14 +413,59 @@ class RollClass {
     	//spotLight.lookAt(this.ball);
 		spotLight.lookAt(0, 0, 0);
     	spotLight.castShadow = true;
-    	this._scene.add(spotLight);
+    	//this._scene.add(spotLight);
+
+		// FOg stuff
+
+		let flash = new THREE.PointLight(0x062d89, 30, 500 ,1.7);
+		flash.position.set(200,300,100);
+		this._scene.add(flash);
+		this.flash = flash
+
+
+		 this.cloudParticles = [];
+
+		let directionalLight = new THREE.DirectionalLight(0xffeedd);
+		directionalLight.position.set(0,0,1);
+		this._scene.add(directionalLight);
+
+		this._scene.fog = new THREE.FogExp2(0x11111f, 0.002);
+
+		this._renderer.setClearColor(this._scene.fog.color);
+
+		let loader = new THREE.TextureLoader();
+		loader.load("/fog", (texture) => {
+
+  		let cloudGeo = new THREE.PlaneBufferGeometry(500,500);
+ 		 let cloudMaterial = new THREE.MeshLambertMaterial({
+    map: texture,
+    transparent: true
+  });
+
+  for(let p=0; p<25; p++) {
+    let cloud = new THREE.Mesh(cloudGeo,cloudMaterial);
+    cloud.position.set(
+      Math.random()*800 -400,
+      500,
+      Math.random()*500 - 450
+    );
+    cloud.rotation.x = 1.16;
+    cloud.rotation.y = -0.12;
+    cloud.rotation.z = Math.random()*360;
+    cloud.material.opacity = 0.6;
+    this._scene.add(cloud);
+    this.cloudParticles.push(cloud);
+
+  }
+  console.log("loaded fog")
+});
 
 
         window.camera = this._camera;
 		//start the loop
 		this._lastUpdate = Date.now()
 		//this._boundLoop = this._loop.bind(this) render_ball
-        this._boundLoop = this.render_ball.bind(this)
+        this._boundLoop =  this.render_particles.bind(this)// this.render_ball.bind(this)
 		this._boundLoop()
 		window.addEventListener('resize', this._resize.bind(this))
         this.ready = false;
@@ -569,6 +620,24 @@ class RollClass {
 	  //  this.group.rotation.y += 0.005;
       requestAnimationFrame(this._boundLoop);
     }
+
+    render_particles() {
+      this.cloudParticles.forEach(p => {
+        p.rotation.z -=0.002;
+      });
+
+      if(Math.random() > 0.93 || this.flash.power > 100) {
+  if(this.flash.power < 100)
+    this.flash.position.set(
+      Math.random()*400,
+      300 + Math.random() *200,
+      100
+    );
+  this.flash.power = 50 + Math.random() * 500;
+}
+            requestAnimationFrame(this._boundLoop);
+
+}
 }
 
 //const Roll = new RollClass()
