@@ -1,7 +1,1 @@
-assets/checkpoints
-assets/content
-assets/soundFonts
-static/node_modules
-static/build
-server/__pycache__
-musicTransformerOriginal.py
+**/.DS_Store

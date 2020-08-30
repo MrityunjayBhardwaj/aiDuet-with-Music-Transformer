@@ -22,7 +22,9 @@ print('libraries are sucesfully imported :D')
 
 # specifing paths
 SF2_PATH = '../assets/soundFonts/Yamaha-C5-Salamander-JNv5.1.sf2'
-save_midi_loc = '../assets/genMusic/unconditional.mid';
+partial_midi_loc = '../assets/genMusic/partial.mid'
+total_midi_loc = '../assets/genMusic/total.mid'
+
 SAMPLE_RATE = 16000
 
 
@@ -85,7 +87,7 @@ estimator = trainer_lib.create_estimator(
 global targets
 global decode_length
 
-def generate_midi(midi_data, total_seconds=10):
+def generate_midi(midi_data):
 
     # Create input generator (so we can adjust priming and
     # decode length on the fly).
@@ -123,7 +125,7 @@ def generate_midi(midi_data, total_seconds=10):
     # Remove the end token from the encoded primer.
     targets = targets[:-1]
 
-    decode_length = max(0, 4096 - len(targets))
+    decode_length = max(0, len(targets))
     if len(targets) >= 4096:
       print('Primer has more events than maximum sequence length; nothing will be generated.')
 
@@ -139,14 +141,16 @@ def generate_midi(midi_data, total_seconds=10):
     ns = note_seq.midi_file_to_note_sequence(midi_filename)
 
     # Append continuation to primer.
-    continuation_ns = note_seq.concatenate_sequences([primer_ns, ns])
+    total_ns = note_seq.concatenate_sequences([primer_ns, ns])
 
     # saving our generated music for future reference
     note_seq.sequence_proto_to_midi_file(
-        continuation_ns, save_midi_loc)
+        ns, partial_midi_loc)
+    note_seq.sequence_proto_to_midi_file(
+        total_ns, total_midi_loc)
 
     print('finished generating.... returning the final file') 
 
-    return save_midi_loc 
+    return partial_midi_loc 
 
 print('finished initializing')

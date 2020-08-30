@@ -42,9 +42,9 @@ def predict():
     valBytes = BytesIO(bytes(valuesStr, 'latin1'))
     midi_data = pretty_midi.PrettyMIDI(valBytes)
     # print('setting duration')
-    duration = float(request.args.get('duration'))
+    # duration = float(request.args.get('duration'))
     print('setting retMidi')
-    ret_midi = generate_midi(midi_data, 10)
+    ret_midi = generate_midi(midi_data)
     return send_file(ret_midi, attachment_filename='return.mid', 
         mimetype='audio/midi', as_attachment=True)
 

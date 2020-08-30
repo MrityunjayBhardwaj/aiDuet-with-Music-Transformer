@@ -45,18 +45,19 @@ class AI extends events.EventEmitter{
 			this._newTrack()
 			let endTime = request.duration
 			//shorten the request if it's too long
-			if (endTime > 10){
-				request = request.slice(request.duration - 15)
+			if (endTime > 5){
+				request = request.slice(request.duration - 5)
 				endTime = request.duration
 			}
-			let additional = endTime
-			additional = Math.min(additional, 8)
-			additional = Math.max(additional, 1)
+			// let additional = endTime
+			// additional = Math.min(additional, 8)
+			// additional = Math.max(additional, 1)
+			console.log('total time');
 			console.log('starting the request');
-			request.load(`./predict?duration=${100+ endTime + additional}`, JSON.stringify(request.toArray()), 'POST').then((response) => {
+			request.load(`./predict`, JSON.stringify(request.toArray()), 'POST').then((response) => {
 
 				console.log('requist fulfilled');
-				response.slice(endTime / 2).tracks[1].notes.forEach((note) => {
+				response.tracks[1].notes.forEach((note) => {
 					const now = Tone.now() + 0.05
 					if (note.noteOn + now > this._aiEndTime){
 						this._aiEndTime = note.noteOn + now
