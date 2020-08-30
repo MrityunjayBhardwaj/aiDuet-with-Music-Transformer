@@ -22,7 +22,7 @@ print('libraries are sucesfully imported :D')
 
 # specifing paths
 SF2_PATH = '../assets/soundFonts/Yamaha-C5-Salamander-JNv5.1.sf2'
-save_midi_loc = '../assets/genMusic/unconditional.mid';
+save_midi_loc = '../assets/genMusic/unconditional.mid'
 SAMPLE_RATE = 16000
 
 

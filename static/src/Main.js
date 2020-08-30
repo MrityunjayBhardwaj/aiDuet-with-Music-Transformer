@@ -33,37 +33,57 @@ const splash = new Splash(document.body)
 
 class Recorder {
 
-	constructor(ai){
-		this.ai = ai;
-		this.recorder = undefined;
-		this.isRecording = false;
-	}
+    constructor(ai) {
+        this.ai = ai;
+        this.recorder = undefined;
+        this.isRecording = false;
+        this.model = this.initModel();
+        this.model_loaded = false;
+    }
+
+    initModel() {
+        const model = new mm.OnsetsAndFrames('https://storage.googleapis.com/magentadata/js/checkpoints/transcription/onsets_frames_uni');
+
+        model.initialize().then(() => {
+            this.model_loaded = true;
+        });
+        return model;
+    }
 
 
- init(roll) {
-	navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
-		console.log('CLONING STEAM')
-		roll.set_stream(stream.clone())
+    init(roll) {
+        navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
+            console.log('CLONING STEAM')
+            roll.set_stream(stream.clone())
 
-		this.recorder = new window.MediaRecorder(stream);
-		this.recorder.ondataavailable = (e) => {
-			console.log("GOT DATA")
-			this.transcribeFromFile(e.data)
-		};
-		this.recorder.start();
-		this.isRecording = true;
-		window.setInterval(() => {
-						if (this.isRecording)
-						{this.recorder.requestData()}
-					}, 5000);
-		});
- }
+            this.recorder = new window.MediaRecorder(stream);
+            this.recorder.ondataavailable = (e) => {
+                this.transcribeFromFile(e.data)
+            };
+            this.recorder.start();
+            this.isRecording = true;
+            window.setInterval(() => {
+                if (this.isRecording && this.model_loaded) {
+                    this.recorder.requestData()
+                }
+            }, 5000);
+        });
+    }
 
-	transcribeFromFile(blob) {
-		console.log("Transcribing " + blob)
-		this.ai.submit(blob)
-	}
+    /*
+       transcribeFromFile(blob) {
+           console.log("Transcribing " + blob)
+           this.ai.submit(blob)
+       }
+       */
+    	transcribeFromFile(blob) { //
+        this.model.transcribeFromAudioFile(blob).then((ns) => {
+        	console.log(ns)
+            ai.submitMidi(ns)
+        });
+    }
 }
+
 
 const ai = new AIRaw()
 const recorder = new Recorder(ai)
@@ -123,13 +143,13 @@ keyboard.on('keyUp', (note) => {
 
 ai.on('keyDown', (note, time) => {
 	sound.keyDown(note, time, true)
-	keyboard.keyDown(note, time, true)
+//	keyboard.keyDown(note, time, true)
 	glow.ai(time)
 })
 
 ai.on('keyUp', (note, time) => {
 	sound.keyUp(note, time, true)
-	keyboard.keyUp(note, time, true)	
+//	keyboard.keyUp(note, time, true)
 	glow.ai(time)
 })
 

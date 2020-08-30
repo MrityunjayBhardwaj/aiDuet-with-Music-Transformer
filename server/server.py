@@ -28,6 +28,20 @@ from io import BytesIO
 import time
 import json
 
+'''
+from magenta.models.onsets_frames_transcription.realtime.onsets_frames_transcription_realtime import (
+    predict_sequence,
+    FLAGS,
+    OnsetsTask,
+    AudioChunk,
+    TfLiteWorker,
+    AudioQueue,
+)
+from magenta.models.onsets_frames_transcription.realtime import audio_recorder
+from magenta.models.onsets_frames_transcription.realtime import tflite_model
+'''
+
+
 from flask import Flask
 app = Flask(__name__, static_url_path='', static_folder=os.path.abspath('../static'))
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
@@ -53,13 +67,35 @@ def predict():
 @app.route('/predict_raw', methods=['POST'])
 def predict_raw():
     print('GOT.....')
-    response = app.response_class(
-        response=json.dumps({'value': 'OK'}),
-        status=200,
-        mimetype='application/json'
-    )
+    print(type(request.data))
+    print('audio_data' in request.files)
+    audio_data = request.files.get('audio_data')
+    print(audio_data)
+    if audio_data:
+        print(audio_data.content_length)
+        response = app.response_class(
+            response=json.dumps({'value': 'OK'}),
+            status=200,
+            mimetype='application/json'
+        )
+    else:
+        response = app.response_class(
+            response=json.dumps({'value': 'No audio data'}),
+            status=400,
+            mimetype='application/json'
+        )
+
     return response
 
+
+@app.route('/predict_frames', methods=['POST'])
+def predict_frames():
+    print('GOT.....')
+    ret_midi  = '../assets/genMusic/unconditional.mid'
+    values = json.loads(request.data)
+    print(values)
+    return send_file(ret_midi, attachment_filename='return.mid',
+        mimetype='audio/midi', as_attachment=True)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
