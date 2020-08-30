@@ -19,6 +19,7 @@ import {AI} from 'ai/AI'
 import {Sound} from 'sound/Sound'
 import {Glow} from 'interface/Glow'
 import {Splash} from 'interface/Splash'
+import {audioSplash} from 'audioInterface/audioSplash'
 import {About} from 'interface/About'
 import {Tutorial} from 'ai/Tutorial'
 import 'babel-polyfill'
@@ -28,13 +29,21 @@ import 'babel-polyfill'
 const about = new About(document.body)
 const splash = new Splash(document.body)
 splash.on('click', () => {
-	keyboard.activate()
-	tutorial.start()
-	about.showButton()
+
+	piano();
+
 })
 splash.on('about', () => {
 	about.open(true)
 })
+
+splash.on('audioClick', ()=>{
+	console.log('invoked audio!')
+
+	// TODO: insert the piano transcribe frontend
+	audio();
+})
+
 about.on('close', () => {
 	if (!splash.loaded || splash.isOpen()){
 		splash.show()
@@ -56,23 +65,59 @@ const container = document.createElement('div')
 container.id = 'container'
 document.body.appendChild(container)
 
-const glow = new Glow(container)
-const keyboard = new Keyboard(container)
-
 const sound = new Sound()
 sound.load()
 
-keyboard.on('keyDown', (note) => {
-	sound.keyDown(note)
-	ai.keyDown(note)
-	glow.user()
-})
+function piano(){
 
-keyboard.on('keyUp', (note) => {
-	sound.keyUp(note)
-	ai.keyUp(note)
-	glow.user()
-})
+	const glow = new Glow(container)
+	const keyboard = new Keyboard(container)
+
+	keyboard.on('keyDown', (note) => {
+		sound.keyDown(note)
+		ai.keyDown(note)
+		glow.user()
+	})
+
+	keyboard.on('keyUp', (note) => {
+		sound.keyUp(note)
+		ai.keyUp(note)
+		glow.user()
+	})
+
+	keyboard.activate()
+	about.showButton()
+
+	// ? do we really need the tutorial?
+	// const tutorial = tuts();
+	// tutorial.start() 
+}
+
+////////////////// AUDIO ////////////////////
+
+function audio(){
+	/* placeholder code */
+
+	const audSplash = new audioSplash(document.body);
+
+	audSplash.on('fileClick', ()=>{
+	// throw a file browser
+	// 	// then use the input file to transcribe it to midi
+
+	// 	// generate the music
+
+	})
+	audSplash.on('recClick', ()=>{
+
+	// 	// initiate the anastasiya's balls vis to vis the input audio in real time
+
+	// 	// transcribe the recorded audio instead.
+
+	// 	// generate the music
+	})
+}
+
+
 
 /////////////// AI ///////////////////
 
@@ -92,24 +137,29 @@ ai.on('keyUp', (note, time) => {
 
 /////////////// TUTORIAL ///////////////////
 
-const tutorial = new Tutorial(container)
+function tuts(keyboard, sound, glow){
 
-tutorial.on('keyDown', (note, time) => {
-	sound.keyDown(note, time)
-	keyboard.keyDown(note, time)
-	glow.user()
-})
+	const tutorial = new Tutorial(container)
 
-tutorial.on('keyUp', (note, time) => {
-	sound.keyUp(note, time)
-	keyboard.keyUp(note, time)
-	glow.user()
-})
+	tutorial.on('keyDown', (note, time) => {
+		sound.keyDown(note, time)
+		keyboard.keyDown(note, time)
+		glow.user()
+	})
 
-tutorial.on('aiKeyDown', (note, time) => {
-	ai.keyDown(note, time)
-})
+	tutorial.on('keyUp', (note, time) => {
+		sound.keyUp(note, time)
+		keyboard.keyUp(note, time)
+		glow.user()
+	})
 
-tutorial.on('aiKeyUp', (note, time) => {
-	ai.keyUp(note, time)
-})
+	tutorial.on('aiKeyDown', (note, time) => {
+		ai.keyDown(note, time)
+	})
+
+	tutorial.on('aiKeyUp', (note, time) => {
+		ai.keyUp(note, time)
+	})
+
+	return tutorial;
+}
