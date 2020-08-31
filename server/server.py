@@ -32,6 +32,27 @@ from flask import Flask
 app = Flask(__name__, static_url_path='', static_folder=os.path.abspath('../static'))
 
 
+@app.route('/predict_frames', methods=['POST'])
+def predict_frames():
+    print('predicting.....')
+    now = time.time()
+    values = json.loads(request.data)
+
+    midi_data = pretty_midi.PrettyMIDI()
+    piano = pretty_midi.Instrument(program=0)
+    for cNote in values['notes']:
+        print(cNote)
+        note = pretty_midi.Note(
+            velocity=cNote['velocity']*1, pitch=cNote['pitch']*1, start=cNote['startTime']*1 , end=cNote['endTime']*1
+        )
+        piano.notes.append(note);
+    midi_data.instruments.append(piano);
+    print('setting retMidi', midi_data)
+
+    ret_midi = generate_midi(midi_data, 10)
+    return send_file(ret_midi, attachment_filename='return.mid', 
+        mimetype='audio/midi', as_attachment=True)
+
 @app.route('/predict', methods=['POST'])
 def predict():
     print('predicting.....')
@@ -41,10 +62,10 @@ def predict():
     valuesStr = (''.join(chr(v) for v in values))
     valBytes = BytesIO(bytes(valuesStr, 'latin1'))
     midi_data = pretty_midi.PrettyMIDI(valBytes)
-    # print('setting duration')
+    print('setting duration', midi_data)
     duration = float(request.args.get('duration'))
     print('setting retMidi')
-    ret_midi = generate_midi(midi_data, 10)
+    # ret_midi = generate_midi(midi_data, 10)
     return send_file(ret_midi, attachment_filename='return.mid', 
         mimetype='audio/midi', as_attachment=True)
 
