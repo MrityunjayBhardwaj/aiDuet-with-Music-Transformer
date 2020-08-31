@@ -17,7 +17,7 @@
 import Tone from 'Tone/core/Tone'
 import MidiConvert from 'midiconvert'
 import events from 'events'
-
+var first_send=true
 class AI extends events.EventEmitter{
 	constructor(){
 		super()
@@ -45,8 +45,8 @@ class AI extends events.EventEmitter{
 			this._newTrack()
 			let endTime = request.duration
 			//shorten the request if it's too long
-			if (endTime > 8){
-				request = request.slice(request.duration - 8)
+			if (endTime > 12){
+				request = request.slice(request.duration - 12)
 				endTime = request.duration
 			}
 			// let additional = endTime
@@ -54,9 +54,16 @@ class AI extends events.EventEmitter{
 			// additional = Math.max(additional, 1)
 			console.log(endTime);
 			console.log('starting the request');
-			request.load(`./predict`, JSON.stringify(request.toArray()), 'POST').then((response) => {
+			var starttime=0
+			if (first_send){
+				starttime=this._lastPhrase
+				first_send=false}
+			
+			console.log("start time")
+			console.log(starttime)
+			request.load(`./predict?start_time=${starttime}`, JSON.stringify(request.toArray()), 'POST').then((response) => {
 
-				console.log('requist fulfilled');
+				console.log('request fulfilled');
 				response.tracks[1].notes.forEach((note) => {
 					const now = Tone.now() + 0.05
 					if (note.noteOn + now > this._aiEndTime){
@@ -80,6 +87,9 @@ class AI extends events.EventEmitter{
 		this._track.noteOn(note, time)
 		clearTimeout(this._sendTimeout)
 		this._heldNotes[note] = true
+		// console.log('key down, update last phrase time')
+		// console.log(this._lastPhrase)
+
 	}
 
 	keyUp(note, time=Tone.now()){
@@ -87,15 +97,21 @@ class AI extends events.EventEmitter{
 		delete this._heldNotes[note]
 		// send something if there are no events for a moment
 		if (Object.keys(this._heldNotes).length === 0){
-			if (this._lastPhrase !== -1 && Date.now() - this._lastPhrase > 10000){
+			if (this._lastPhrase !== -1 && Date.now() - this._lastPhrase > 12000){
 				//just send it
-				console.log(Date.now() - this._lastPhrase)
+				// console.log('time different is')
+				// console.log(Date.now() - this._lastPhrase)
 				this.send()
 			} else {
-				this._sendTimeout = setTimeout(this.send.bind(this), 600 + (time - Tone.now()) * 1000)
+				// console.log('time - tone now')
+				// console.log(time - Tone.now())
+				
+				this._sendTimeout = setTimeout(this.send.bind(this), 2000 + (time - Tone.now()) * 1000)
 			}
 		}
-		this._lastPhrase = Date.now()
+		// console.log('key up, update last phrase time')
+		// this._lastPhrase = Date.now()
+		// console.log(this._lastPhrase)
 	}
 }
 
