@@ -65,11 +65,6 @@ class audioSplash extends events.EventEmitter{
             };
             this.recorder.start();
             this.isRecording = true;
-            window.setInterval(() => {
-                if (this.isRecording) {
-                    this.recorder.requestData()
-                }
-            }, 10000);
         });
 			this._clicked = true
             this.emit('recClick')
@@ -84,7 +79,6 @@ class audioSplash extends events.EventEmitter{
 				this.recorder.stop()
 				this.emit('finishedRecording')
 			}
-			this.emit('transcribing')
 			const cElement = this;
 					// TODO: preload this model
 			const model = new mm.OnsetsAndFrames('https://storage.googleapis.com/magentadata/js/checkpoints/transcription/onsets_frames_uni');
@@ -94,20 +88,41 @@ class audioSplash extends events.EventEmitter{
 					//file.value = null; //TODO maybe reactivate this
 					console.log('transcription finished!')
 					cElement.emit('finished');
-					this.play_node_sequence(ns)
-					// exporting the generated note sequence to the backend...
-					this.aiRaw.submitNS(ns, this.bound_load)
+					this.play_node_sequence(ns).then(()=>{
+
+						console.log('finished playing note sequences')
+
+						// exporting the generated note sequence to the backend...
+						this.aiRaw.submitNS(ns, this.bound_load).then(()=>{
+							cElement.emit('finishedGenerating')
+						})
+
+						// waiting for the last note bars to leave the screen before invoking the generateMuisc event...
+						setTimeout(()=>cElement.emit('generateMusic'), 2000)
+						
+					})
+					
 				})
 			})
 	}
 
     play_node_sequence(ns) {
-		console.log(ns)
-		ns.notes.forEach( (note) => {
-			const now = Tone.now() + 0.05
-			this.emit('keyDown', note.pitch, note.startTime + now, false)
-			this.emit('keyUp', note.pitch, note.endTime + now, false)
-			this.last_note = note.endTime + now
+		console.log(ns, )
+
+		return new Promise((resolve)=>{
+			const len = ns.notes.length;
+			ns.notes.forEach( (note,i) => {
+				const now = Tone.now() + 0.05
+				this.emit('keyDown', note.pitch, note.startTime + now, false)
+				this.emit('keyUp', note.pitch, note.endTime + now, false)
+				this.last_note = note.endTime + now
+
+				console.log(i, len)
+				if(i === (len -1) ){
+					resolve();
+
+				}
+			})
 
 		})
 	}

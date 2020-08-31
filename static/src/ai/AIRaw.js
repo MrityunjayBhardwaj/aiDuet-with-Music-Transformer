@@ -15,11 +15,17 @@ class AIRaw extends events.EventEmitter {
 	}
 
     submitNS(ns, onload) {
-    	console.log('starting the request');
+        console.log('starting the request');
+        
+        return new Promise((resolve)=>{
 			this._midi.load(`./predict_frames`, JSON.stringify(ns), 'POST').then((response) => {
 				onload(response)
-				this._newTrack()
+                this._newTrack()
+                
+                resolve();
 			})
+
+        })
     }
 
     submit(blob) {

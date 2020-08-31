@@ -100,30 +100,46 @@ function audio(){
 
 	let transcribingSplash = null;
 	let recordingSplash = null;
+	let generatingMusicSplash = null;
 
 	audSplash.on('transcribing', () => {
 	// TODO: change the ui appropriately
 		transcribingSplash = transcribing(document.body);
+
 	})
 
 
 	// finished transcribing the audio
 	audSplash.on('finished', ()=>{
 
-		document.body.removeChild(transcribingSplash);
+		transcribingSplash.remove();
+		// console.log('finished transcribing and removed the transcribe splash screen', transcribingSplash)
+    
+	})
 
-	// TODO: add ui while our backend is generating a new sequence.
+	audSplash.on('generateMusic',()=>{
+
+		console.log('started generating musiq')
+
+		generatingMusicSplash = generatingMusic(document.body);
+	})
+
+	audSplash.on('finishedGenerating', ()=>{
+
+		document.body.removeChild(generatingMusicSplash);
 	})
 
 	audSplash.on('finishedRecording', ()=>{
 
-		document.body.removeChild(recordingSplash);
+		document.body.removeChild(recordingSplash)
+
+		console.log('finished rec', recordingSplash)
 
 	})
 
 
 	audSplash.on('recClick', ()=> {
-		recordingSplash = recording(document.body)
+		recordingSplash = recording(document.body, audSplash)
 	})
 
 	keyboard.activate()
@@ -164,7 +180,7 @@ function transcribing(container){
 	return splash;
 }
 
-function recording(container){
+function generatingMusic(container){
 	const splash = document.createElement('div')
 	splash.id = 'splash'
 	container.appendChild(splash)
@@ -176,8 +192,45 @@ function recording(container){
 
 	const title = document.createElement('div')
 	title.id = 'title_orange'
-	title.textContent = 'recording...'
+	title.textContent = 'generating...'
 	titleContainer.appendChild(title)
+
+	const subTitle = document.createElement('div')
+	subTitle.id = 'subTitle'
+	titleContainer.appendChild(subTitle)
+	subTitle.textContent = 'your robots are creating new piece of music for you.. please wait, its going to take a white.'
+
+	// TODO: maybe add a loading animation loop
+
+	return splash;
+}
+
+function recording(container,audSplash){
+	const splash = document.createElement('div')
+	splash.id = 'splash'
+	container.appendChild(splash)
+
+	// the title
+	const titleContainer = document.createElement('div')
+	titleContainer.id = 'titleContainer'
+	splash.appendChild(titleContainer)
+
+	const title = document.createElement('div')
+	title.id = 'title_orange'
+	title.textContent = 'Recording...'
+	titleContainer.appendChild(title)
+
+	title.style.cursor = "pointer"
+	title.classList.add('clickable');
+
+	// stop the recording if the recording title was clicked again
+	title.addEventListener('click', ()=>{
+		audSplash.emit('transcribing')
+
+		title.textContent = "Stop"
+
+		audSplash.recorder.requestData();
+	})
 
 	return splash;
 }
