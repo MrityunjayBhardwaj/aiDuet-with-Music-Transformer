@@ -46,6 +46,7 @@ class audioSplash extends events.EventEmitter{
 			splash.classList.add('disappear')
 			// Starts transcribing..
 			console.log('started transcribing the input music file')
+			this.emit('transcribing')
 			this.transcribeFromFile(file.target.files[0])
 			
 			this._clicked = true
@@ -88,7 +89,7 @@ class audioSplash extends events.EventEmitter{
 					//file.value = null; //TODO maybe reactivate this
 					console.log('transcription finished!')
 					cElement.emit('finished');
-					this.play_node_sequence(ns).then(()=>{
+					this.play_node_sequence(ns).then((seqDueration)=>{
 
 						console.log('finished playing note sequences')
 
@@ -98,7 +99,7 @@ class audioSplash extends events.EventEmitter{
 						})
 
 						// waiting for the last note bars to leave the screen before invoking the generateMuisc event...
-						setTimeout(()=>cElement.emit('generateMusic'), 2000)
+						setTimeout(()=>cElement.emit('generateMusic'), seqDueration)
 						
 					})
 					
@@ -110,25 +111,22 @@ class audioSplash extends events.EventEmitter{
 		console.log(ns, )
 
 		return new Promise((resolve)=>{
-			const len = ns.notes.length;
+			let len = 0;
 			ns.notes.forEach( (note,i) => {
 				const now = Tone.now() + 0.05
 				this.emit('keyDown', note.pitch, note.startTime + now, false)
 				this.emit('keyUp', note.pitch, note.endTime + now, false)
 				this.last_note = note.endTime + now
+				len += this.last_note;
 
-				console.log(i, len)
-				if(i === (len -1) ){
-					resolve();
-
-				}
+				// console.log(i, len, now, len, ns.notes.length)
 			})
-
+			setTimeout(()=>{resolve(Math.floor(len*100*1))}, )
 		})
 	}
 
     load(response){
-		response.tracks[1].notes.forEach((note) => {
+		response.tracks[1].notes.forEach((note, i) => {
 			const now = Math.max(Tone.now() + 0.05, this.last_note)
 			if (note.noteOn + now > this._aiEndTime){
 				this._aiEndTime = note.noteOn + now
@@ -136,6 +134,13 @@ class audioSplash extends events.EventEmitter{
 				note.duration = note.duration * 0.9
 				note.duration = Math.min(note.duration, 4)
 				this.emit('keyUp', note.midi, note.noteOff + now, true)
+			}
+
+			if (i === (response.tracks[1].notes.length -1)){
+			
+				console.log('finished playing the generated music on the  ')
+				this.emit('finishedPlayingGenMusic', response.tracks[1])
+
 			}
 		})
 	}
