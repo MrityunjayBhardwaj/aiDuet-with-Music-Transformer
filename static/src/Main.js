@@ -100,13 +100,26 @@ function audio(){
 
 	const audSplash = new audioSplash(document.body);
 
-	audSplash.on('fileClick', ()=>{
-	// throw a file browser
-	// 	// then use the input file to transcribe it to midi
+	let transcribingSplash = null;
+	audSplash.on('transcribing', ()=>{
+	// TODO: change the ui appropriately
+		transcribingSplash = transcribing(document.body);
 
-	// 	// generate the music
+
+
 
 	})
+
+
+	// finished transcribing the audio
+	audSplash.on('finished', ()=>{
+
+		document.body.removeChild(transcribingSplash);
+
+	// TODO: add ui while our backend is generating a new sequence.
+	})
+
+
 	audSplash.on('recClick', ()=>{
 
 	// 	// initiate the anastasiya's balls vis to vis the input audio in real time
@@ -115,6 +128,31 @@ function audio(){
 
 	// 	// generate the music
 	})
+}
+
+/////////////// Transcribing /////////////////
+
+function transcribing(container){
+	const splash = document.createElement('div')
+	splash.id = 'splash'
+	container.appendChild(splash)
+
+	// the title
+	const titleContainer = document.createElement('div')
+	titleContainer.id = 'titleContainer'
+	splash.appendChild(titleContainer)
+
+	const title = document.createElement('div')
+	title.id = 'title_orange'
+	title.textContent = 'transcribing...'
+	titleContainer.appendChild(title)
+
+	const subTitle = document.createElement('div')
+	subTitle.id = 'subTitle'
+	titleContainer.appendChild(subTitle)
+	subTitle.textContent = 'your robots are working on your file.'
+
+	return splash;
 }
 
 
