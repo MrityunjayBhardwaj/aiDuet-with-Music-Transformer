@@ -5,12 +5,15 @@ import micInput from 'audioInterface/micInput'
 import audioFileInput from 'audioInterface/audioFileInput'
 import {AI} from 'ai/AI'
 import { AIRaw } from 'ai/AIRaw'
+import Tone from 'Tone/core/Tone'
+
 
 // TODO: use it through modules instaed of putting it into the main index html
 // import model from 'transcribeAI/transcribe'
 
 class audioSplash extends events.EventEmitter{
 	constructor(container){
+		console.log("Loading audi splash")
 
 		super()
 		const splash = this._splash = document.createElement('div')
@@ -31,47 +34,96 @@ class audioSplash extends events.EventEmitter{
 		subTitle.id = 'subTitle'
 		titleContainer.appendChild(subTitle)
         subTitle.textContent = 'specify which audio input to use'
+		this.aiRaw = new AIRaw();
+		this._aiEndTime = 0;
+		this.bound_load = this.load.bind(this)
+		this.last_note = 0
+
 
         this._clicked = false
         const fileInp = this._loader = new audioFileInput(titleContainer)
-        fileInp.on('uploaded', (file)=>{
+        fileInp.on('uploaded', (file) => {
 			splash.classList.add('disappear')
-			const cElement = this;
-
 			// Starts transcribing..
 			console.log('started transcribing the input music file')
-
-			// TODO: preload this model
-			const model = new mm.OnsetsAndFrames('https://storage.googleapis.com/magentadata/js/checkpoints/transcription/onsets_frames_uni');
-			model.initialize().then(()=>{
-
-				model.transcribeFromAudioFile(file.target.files[0]).then((ns) => {
-					// making space for future files to be uploaded...
-					file.value = null;
-					console.log('transcription finished!')
-
-					cElement.emit('finished');
-					
-
-					const aiRaw = new AIRaw();
-					// exporting the generated note sequence to the backend...
-					aiRaw.submitNS(ns)
-				})
-			})
-
+			this.transcribeFromFile(file.target.files[0])
 			
 			this._clicked = true
-            this.emit('transcribing')
         } )
 
         const recInp = this._loader = new micInput(titleContainer)
-        recInp.on('click', ()=>{
+        recInp.on('click', () => {
             splash.classList.add('disappear')
+			navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
+            //console.log('CLONING STEAM')
+            //roll.set_stream(stream.clone())
+			console.log("Recording")
+
+            this.recorder = new window.MediaRecorder(stream);
+            this.recorder.ondataavailable = (e) => {
+                this.transcribeFromFile(e.data)
+            };
+            this.recorder.start();
+            this.isRecording = true;
+            window.setInterval(() => {
+                if (this.isRecording) {
+                    this.recorder.requestData()
+                }
+            }, 10000);
+        });
 			this._clicked = true
             this.emit('recClick')
         } )
 
     }
+
+    transcribeFromFile(file){
+			if (this.isRecording) {
+				console.log("Stopping recording")
+				this.isRecording = false;
+				this.recorder.stop()
+				this.emit('finishedRecording')
+			}
+			this.emit('transcribing')
+			const cElement = this;
+					// TODO: preload this model
+			const model = new mm.OnsetsAndFrames('https://storage.googleapis.com/magentadata/js/checkpoints/transcription/onsets_frames_uni');
+			model.initialize().then(()=>{
+				model.transcribeFromAudioFile(file).then((ns) => {
+					// making space for future files to be uploaded...
+					//file.value = null; //TODO maybe reactivate this
+					console.log('transcription finished!')
+					cElement.emit('finished');
+					this.play_node_sequence(ns)
+					// exporting the generated note sequence to the backend...
+					this.aiRaw.submitNS(ns, this.bound_load)
+				})
+			})
+	}
+
+    play_node_sequence(ns) {
+		console.log(ns)
+		ns.notes.forEach( (note) => {
+			const now = Tone.now() + 0.05
+			this.emit('keyDown', note.pitch, note.startTime + now, false)
+			this.emit('keyUp', note.pitch, note.endTime + now, false)
+			this.last_note = note.endTime + now
+
+		})
+	}
+
+    load(response){
+		response.tracks[1].notes.forEach((note) => {
+			const now = Math.max(Tone.now() + 0.05, this.last_note)
+			if (note.noteOn + now > this._aiEndTime){
+				this._aiEndTime = note.noteOn + now
+				this.emit('keyDown', note.midi, note.noteOn + now, true)
+				note.duration = note.duration * 0.9
+				note.duration = Math.min(note.duration, 4)
+				this.emit('keyUp', note.midi, note.noteOff + now, true)
+			}
+		})
+	}
 
 	get loaded(){
 		return this._loader.loaded

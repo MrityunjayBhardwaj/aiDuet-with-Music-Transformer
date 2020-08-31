@@ -28,18 +28,17 @@ import 'babel-polyfill'
 
 const about = new About(document.body)
 const splash = new Splash(document.body)
-splash.on('click', () => {
 
+splash.on('click', () => {
 	piano();
 
 })
+
 splash.on('about', () => {
 	about.open(true)
 })
 
-splash.on('audioClick', ()=>{
-	console.log('invoked audio!')
-
+splash.on('audio', ()=>{
 	// TODO: insert the piano transcribe frontend
 	audio();
 })
@@ -67,11 +66,10 @@ document.body.appendChild(container)
 
 const sound = new Sound()
 sound.load()
+const glow = new Glow(container)
+const keyboard = new Keyboard(container)
 
 function piano(){
-
-	const glow = new Glow(container)
-	const keyboard = new Keyboard(container)
 
 	keyboard.on('keyDown', (note) => {
 		sound.keyDown(note)
@@ -101,13 +99,11 @@ function audio(){
 	const audSplash = new audioSplash(document.body);
 
 	let transcribingSplash = null;
-	audSplash.on('transcribing', ()=>{
+	let recordingSplash = null;
+
+	audSplash.on('transcribing', () => {
 	// TODO: change the ui appropriately
 		transcribingSplash = transcribing(document.body);
-
-
-
-
 	})
 
 
@@ -119,14 +115,27 @@ function audio(){
 	// TODO: add ui while our backend is generating a new sequence.
 	})
 
+	audSplash.on('finishedRecording', ()=>{
 
-	audSplash.on('recClick', ()=>{
+		document.body.removeChild(recordingSplash);
 
-	// 	// initiate the anastasiya's balls vis to vis the input audio in real time
+	})
 
-	// 	// transcribe the recorded audio instead.
 
-	// 	// generate the music
+	audSplash.on('recClick', ()=> {
+		recordingSplash = recording(document.body)
+	})
+
+	keyboard.activate()
+	audSplash.on('keyDown', (note, time, ai) => {
+		sound.keyDown(note, time, ai)
+		keyboard.keyDown(note, time, ai)
+	})
+
+	audSplash.on('keyUp', (note, time, ai) => {
+		sound.keyUp(note, time, ai)
+		keyboard.keyUp(note, time, ai)
+		if (ai){glow.ai(time)}
 	})
 }
 
@@ -154,6 +163,25 @@ function transcribing(container){
 
 	return splash;
 }
+
+function recording(container){
+	const splash = document.createElement('div')
+	splash.id = 'splash'
+	container.appendChild(splash)
+
+	// the title
+	const titleContainer = document.createElement('div')
+	titleContainer.id = 'titleContainer'
+	splash.appendChild(titleContainer)
+
+	const title = document.createElement('div')
+	title.id = 'title_orange'
+	title.textContent = 'recording...'
+	titleContainer.appendChild(title)
+
+	return splash;
+}
+
 
 
 
