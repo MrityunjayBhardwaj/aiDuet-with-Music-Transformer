@@ -2,6 +2,8 @@
 
 $topMargin: 35px;
 
+
+
 #splash {
 	position: absolute;
 	height: 100%;
@@ -18,6 +20,8 @@ $topMargin: 35px;
 		opacity: 0;
 		pointer-events: none;
 	}
+
+	
 
 	#learnMore {
 		margin-top: $topMargin;
@@ -40,6 +44,15 @@ $topMargin: 35px;
 			font-size: 55px;
 			letter-spacing: 1px;
 			font-weight: 300;
+		}
+		#title_orange {
+			line-height: 60px;
+			font-size: 55px;
+			letter-spacing: 1px;
+			font-weight: 300;
+			color: $orange;
+			animation: pulsing-fade 1.2s ease-in-out infinite;
+
 		}
 
 		#subTitle, #howItWorks {
@@ -448,4 +461,80 @@ $topMargin: 35px;
 			}
 		}
 	}
+}
+
+
+.button {
+  -webkit-appearance: none;
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* .button[disabled] {
+  opacity: 0.5;
+  pointer-events: none;
+} */
+
+.button > .loading {
+  display: none;
+}
+
+.button.working {
+  background: var(--working);
+  transition: background-color 0s ease-out;
+  opacity: 1;
+  color: black;
+}
+
+/* .working > .text {
+  display: none;
+} */
+
+.working > .loading {
+  display: inline-block !important;
+  animation: pulsing-fade 1.2s ease-in-out infinite;
+}
+
+.button:hover {
+  transition: background-color 0.4s ease-out;
+  background: var(--hover);
+}
+
+.button.player {
+  background: white;
+  color: var(--bottom);
+  width: 180px;
+  transition: opacity 0.4s ease-out;
+  margin: 0;
+}
+
+.button.player:nth-child(1) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.button.player:nth-child(2) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.button.player:not(.active) {
+  opacity: 0.5;
+}
+.button.player:not(.active):hover {
+  opacity: 1;
+}
+
+.button.save {
+  display: block;
+  width: 140px;
+  margin: 0 auto;
+}
+
+input[type="file"] {
+	width: 0;
+	height: 0;
+	opacity: 0;
+	cursor: pointer;
+	display: none;
 }
