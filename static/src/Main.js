@@ -28,18 +28,17 @@ import 'babel-polyfill'
 
 const about = new About(document.body)
 const splash = new Splash(document.body)
-splash.on('click', () => {
 
+splash.on('click', () => {
 	piano();
 
 })
+
 splash.on('about', () => {
 	about.open(true)
 })
 
-splash.on('audioClick', ()=>{
-	console.log('invoked audio!')
-
+splash.on('audio', ()=>{
 	// TODO: insert the piano transcribe frontend
 	audio();
 })
@@ -67,11 +66,10 @@ document.body.appendChild(container)
 
 const sound = new Sound()
 sound.load()
+const glow = new Glow(container)
+const keyboard = new Keyboard(container)
 
 function piano(){
-
-	const glow = new Glow(container)
-	const keyboard = new Keyboard(container)
 
 	keyboard.on('keyDown', (note) => {
 		sound.keyDown(note)
@@ -101,13 +99,9 @@ function audio(){
 	const audSplash = new audioSplash(document.body);
 
 	let transcribingSplash = null;
-	audSplash.on('transcribing', ()=>{
+	audSplash.on('transcribing', () => {
 	// TODO: change the ui appropriately
 		transcribingSplash = transcribing(document.body);
-
-
-
-
 	})
 
 
@@ -127,6 +121,18 @@ function audio(){
 	// 	// transcribe the recorded audio instead.
 
 	// 	// generate the music
+	})
+
+	keyboard.activate()
+	audSplash.on('keyDown', (note, time, ai) => {
+		sound.keyDown(note, time, ai)
+		keyboard.keyDown(note, time, ai)
+	})
+
+	audSplash.on('keyUp', (note, time, ai) => {
+		sound.keyUp(note, time, ai)
+		keyboard.keyUp(note, time, ai)
+		if (ai){glow.ai(time)}
 	})
 }
 

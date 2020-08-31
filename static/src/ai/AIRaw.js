@@ -7,7 +7,6 @@ class AIRaw extends events.EventEmitter {
 
     constructor() {
         super();
-        this._aiEndTime = 0;
 		this._newTrack()
     }
 
@@ -15,20 +14,10 @@ class AIRaw extends events.EventEmitter {
 		this._midi = new MidiConvert.create()
 	}
 
-    submitNS(ns) {
+    submitNS(ns, onload) {
     	console.log('starting the request');
 			this._midi.load(`./predict_frames`, JSON.stringify(ns), 'POST').then((response) => {
-				console.log('requist fulfilled');
-				response.tracks[1].notes.forEach((note) => {
-					const now = Tone.now() + 0.05
-					if (note.noteOn + now > this._aiEndTime){
-						this._aiEndTime = note.noteOn + now
-						this.emit('keyDown', note.midi, note.noteOn + now)
-						note.duration = note.duration * 0.9
-						note.duration = Math.min(note.duration, 4)
-						this.emit('keyUp', note.midi, note.noteOff + now)
-					}
-				})
+				onload(response)
 				this._newTrack()
 			})
     }

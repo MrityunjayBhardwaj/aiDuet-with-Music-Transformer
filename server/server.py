@@ -49,7 +49,7 @@ def predict_frames():
     midi_data.instruments.append(piano);
     print('setting retMidi', midi_data)
 
-    ret_midi = generate_midi(midi_data, 10)
+    ret_midi = generate_midi(midi_data)
     return send_file(ret_midi, attachment_filename='return.mid', 
         mimetype='audio/midi', as_attachment=True)
 
@@ -65,7 +65,7 @@ def predict():
     print('setting duration', midi_data)
     duration = float(request.args.get('duration'))
     print('setting retMidi')
-    # ret_midi = generate_midi(midi_data, 10)
+    ret_midi = generate_midi(midi_data, 10)
     return send_file(ret_midi, attachment_filename='return.mid', 
         mimetype='audio/midi', as_attachment=True)
 
