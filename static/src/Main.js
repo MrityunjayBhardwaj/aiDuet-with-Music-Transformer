@@ -99,6 +99,8 @@ function audio(){
 	const audSplash = new audioSplash(document.body);
 
 	let transcribingSplash = null;
+	let recordingSplash = null;
+
 	audSplash.on('transcribing', () => {
 	// TODO: change the ui appropriately
 		transcribingSplash = transcribing(document.body);
@@ -113,14 +115,15 @@ function audio(){
 	// TODO: add ui while our backend is generating a new sequence.
 	})
 
+	audSplash.on('finishedRecording', ()=>{
 
-	audSplash.on('recClick', ()=>{
+		document.body.removeChild(recordingSplash);
 
-	// 	// initiate the anastasiya's balls vis to vis the input audio in real time
+	})
 
-	// 	// transcribe the recorded audio instead.
 
-	// 	// generate the music
+	audSplash.on('recClick', ()=> {
+		recordingSplash = recording(document.body)
 	})
 
 	keyboard.activate()
@@ -160,6 +163,25 @@ function transcribing(container){
 
 	return splash;
 }
+
+function recording(container){
+	const splash = document.createElement('div')
+	splash.id = 'splash'
+	container.appendChild(splash)
+
+	// the title
+	const titleContainer = document.createElement('div')
+	titleContainer.id = 'titleContainer'
+	splash.appendChild(titleContainer)
+
+	const title = document.createElement('div')
+	title.id = 'title_orange'
+	title.textContent = 'recording...'
+	titleContainer.appendChild(title)
+
+	return splash;
+}
+
 
 
 

@@ -42,42 +42,64 @@ class audioSplash extends events.EventEmitter{
 
         this._clicked = false
         const fileInp = this._loader = new audioFileInput(titleContainer)
-        fileInp.on('uploaded', (file)=>{
+        fileInp.on('uploaded', (file) => {
 			splash.classList.add('disappear')
-			const cElement = this;
-
 			// Starts transcribing..
 			console.log('started transcribing the input music file')
-
-			// TODO: preload this model
-			const model = new mm.OnsetsAndFrames('https://storage.googleapis.com/magentadata/js/checkpoints/transcription/onsets_frames_uni');
-			model.initialize().then(()=>{
-
-				model.transcribeFromAudioFile(file.target.files[0]).then((ns) => {
-					// making space for future files to be uploaded...
-					file.value = null;
-					console.log('transcription finished!')
-					cElement.emit('finished');
-					console.log("CQALL NBS FUNC")
-
-					this.play_node_sequence(ns)
-					// exporting the generated note sequence to the backend...
-					this.aiRaw.submitNS(ns, this.bound_load)
-				})
-			})
+			this.transcribeFromFile(file.target.files[0])
 			
 			this._clicked = true
-            this.emit('transcribing')
         } )
 
         const recInp = this._loader = new micInput(titleContainer)
-        recInp.on('click', ()=>{
+        recInp.on('click', () => {
             splash.classList.add('disappear')
+			navigator.mediaDevices.getUserMedia({audio: true}).then(stream => {
+            //console.log('CLONING STEAM')
+            //roll.set_stream(stream.clone())
+			console.log("Recording")
+
+            this.recorder = new window.MediaRecorder(stream);
+            this.recorder.ondataavailable = (e) => {
+                this.transcribeFromFile(e.data)
+            };
+            this.recorder.start();
+            this.isRecording = true;
+            window.setInterval(() => {
+                if (this.isRecording) {
+                    this.recorder.requestData()
+                }
+            }, 10000);
+        });
 			this._clicked = true
             this.emit('recClick')
         } )
 
     }
+
+    transcribeFromFile(file){
+			if (this.isRecording) {
+				console.log("Stopping recording")
+				this.isRecording = false;
+				this.recorder.stop()
+				this.emit('finishedRecording')
+			}
+			this.emit('transcribing')
+			const cElement = this;
+					// TODO: preload this model
+			const model = new mm.OnsetsAndFrames('https://storage.googleapis.com/magentadata/js/checkpoints/transcription/onsets_frames_uni');
+			model.initialize().then(()=>{
+				model.transcribeFromAudioFile(file).then((ns) => {
+					// making space for future files to be uploaded...
+					//file.value = null; //TODO maybe reactivate this
+					console.log('transcription finished!')
+					cElement.emit('finished');
+					this.play_node_sequence(ns)
+					// exporting the generated note sequence to the backend...
+					this.aiRaw.submitNS(ns, this.bound_load)
+				})
+			})
+	}
 
     play_node_sequence(ns) {
 		console.log(ns)
