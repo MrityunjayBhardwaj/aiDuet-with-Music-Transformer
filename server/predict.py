@@ -19,10 +19,13 @@ import note_seq
 tf.disable_v2_behavior()
 
 print('libraries are sucesfully imported :D')
-
+tf.get_logger().setLevel('ERROR')
 # specifing paths
 SF2_PATH = '../assets/soundFonts/Yamaha-C5-Salamander-JNv5.1.sf2'
-save_midi_loc = '../assets/genMusic/unconditional.mid';
+# partial_midi_loc = '../assets/genMusic/partial.mid'
+# total_midi_loc = '../assets/genMusic/total.mid'
+
+
 SAMPLE_RATE = 16000
 
 
@@ -85,7 +88,7 @@ estimator = trainer_lib.create_estimator(
 global targets
 global decode_length
 
-def generate_midi(midi_data, total_seconds=10):
+def generate_midi(prime_loc,partial_loc,total_loc):
 
     # Create input generator (so we can adjust priming and
     # decode length on the fly).
@@ -112,7 +115,7 @@ def generate_midi(midi_data, total_seconds=10):
     _ = next(unconditional_samples)
 
     # convert our input midi to note sequence.
-    prime_ns = note_seq.midi_io.midi_to_sequence_proto(midi_data)
+    prime_ns = note_seq.midi_file_to_note_sequence(prime_loc)
 
     # Handle sustain pedal in the primer.
     primer_ns = note_seq.apply_sustain_control_changes(prime_ns)
@@ -123,7 +126,7 @@ def generate_midi(midi_data, total_seconds=10):
     # Remove the end token from the encoded primer.
     targets = targets[:-1]
 
-    decode_length = max(0, 4096 - len(targets))
+    decode_length = max(0, np.random.randint(0,10) + len(targets))
     if len(targets) >= 4096:
       print('Primer has more events than maximum sequence length; nothing will be generated.')
 
@@ -139,14 +142,16 @@ def generate_midi(midi_data, total_seconds=10):
     ns = note_seq.midi_file_to_note_sequence(midi_filename)
 
     # Append continuation to primer.
-    continuation_ns = note_seq.concatenate_sequences([primer_ns, ns])
+    total_ns = note_seq.concatenate_sequences([primer_ns, ns])
 
     # saving our generated music for future reference
     note_seq.sequence_proto_to_midi_file(
-        continuation_ns, save_midi_loc)
+        ns, partial_loc)
+    note_seq.sequence_proto_to_midi_file(
+        total_ns, total_loc)
 
     print('finished generating.... returning the final file') 
 
-    return save_midi_loc 
+    return partial_loc 
 
 print('finished initializing')
