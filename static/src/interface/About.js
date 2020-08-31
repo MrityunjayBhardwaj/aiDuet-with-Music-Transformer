@@ -19,16 +19,17 @@ import YouTubeIframeLoader from 'youtube-iframe'
 import events from 'events'
 
 const magentaLink = 'https://magenta.tensorflow.org/'
-const tfLink = 'https://www.tensorflow.org/'
-const toneLink = 'https://github.com/Tonejs/Tone.js'
-const sourceCode = 'https://github.com/googlecreativelab/aiexperiments-ai-duet'
+const originalList = 'https://experiments.withgoogle.com/ai/ai-duet/view/'
+const onsetFramesLink = 'https://magenta.tensorflow.org/onsets-frames'
+const transformerLink = 'https://magenta.tensorflow.org/music-transformer'
 
-const blurbCopy = `Built by Yotam Mann with friends on the Magenta and Creative Lab teams at Google. 
-					It uses <a target='_blank' href='${tfLink}'>TensorFlow</a>,
-					<a target='_blank' href='${toneLink}'>Tone.js</a> and tools 
-					from the <a target='_blank' href='${magentaLink}'>Magenta project</a>. 
-					The open-source code is <a target='_blank' href='${sourceCode}'>available here</a>.
-					Click the keyboard, use your computer keys, or even plug in a MIDI keyboard.`
+
+const blurbCopy = `This project builds on the original <a target='_blank' href='${originalList}'> A.I. Duet</a>
+				   project by Yotam Mann.  We added the option to use raw audio as input by incorporating 
+				   the <a target='_blank' href='${onsetFramesLink}'> Onset and Frames </a>  model from the 
+				   <a target='_blank' href='${magentaLink}'>Magenta</a> project to transcribe audio input to MIDI. 
+				   You can upload your own audio file or record music from your microphone and get an improvised 
+				   continuation from the <a target='_blank' href='${transformerLink}'> Transformer</a>  model.`
 
 export class About extends events.EventEmitter{
 	constructor(container){
@@ -61,9 +62,10 @@ export class About extends events.EventEmitter{
 		title.textContent = 'A.I. Duet'
 		// content.appendChild(title)
 
+		// TODO once we have a video add it here
 		const video = document.createElement('div')
 		video.id = 'video'
-		//vid YT0k99hCY5I 
+		//vid YT0k99hCY5I
 		video.innerHTML = `<iframe id='youtube-iframe' src="https://www.youtube.com/embed/0ZE1bfPtvZo?modestbranding=0&showinfo=0&enablejsapi=1" frameborder="0" allowfullscreen></iframe>`
 		content.appendChild(video)
 

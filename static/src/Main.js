@@ -198,7 +198,7 @@ function generatingMusic(container){
 	const subTitle = document.createElement('div')
 	subTitle.id = 'subTitle'
 	titleContainer.appendChild(subTitle)
-	subTitle.textContent = 'your robots are creating new piece of music for you.. please wait, its going to take a white.'
+	subTitle.textContent = 'your robots are creating new piece of music for you.. please wait, its going to take a while.'
 
 	// TODO: maybe add a loading animation loop
 
