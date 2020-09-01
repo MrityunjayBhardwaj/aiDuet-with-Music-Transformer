@@ -51,9 +51,23 @@ $topMargin: 35px;
 			letter-spacing: 1px;
 			font-weight: 300;
 			color: $orange;
+
+		}
+		#title_record {
+			line-height: 60px;
+			font-size: 55px;
+			letter-spacing: 1px;
+			font-weight: 300;
+			color: red;
 			animation: pulsing-fade 1.2s ease-in-out infinite;
 
 		}
+		
+		@keyframes pulsing-fade {
+		0%,100% { opacity: 0 }
+		50% { opacity: 1 }
+		}
+
 
 		#subTitle, #howItWorks {
 			margin-top: $topMargin;

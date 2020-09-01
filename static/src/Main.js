@@ -180,6 +180,12 @@ function transcribing(container){
 	titleContainer.id = 'titleContainer'
 	splash.appendChild(titleContainer)
 
+
+	const robot = document.createElement('img')
+	robot.src = '../images/robot.gif'
+
+	titleContainer.appendChild(robot)
+
 	const title = document.createElement('div')
 	title.id = 'title_orange'
 	title.textContent = 'transcribing...'
@@ -190,6 +196,8 @@ function transcribing(container){
 	titleContainer.appendChild(subTitle)
 	subTitle.textContent = 'your robots are working on your file.'
 
+
+
 	return splash;
 }
 
@@ -198,10 +206,14 @@ function generatingMusic(container){
 	splash.id = 'splash'
 	container.appendChild(splash)
 
+	const robot = document.createElement('img')
+	robot.src = '../images/robot.gif'
+
 	// the title
 	const titleContainer = document.createElement('div')
 	titleContainer.id = 'titleContainer'
 	splash.appendChild(titleContainer)
+	titleContainer.appendChild(robot)
 
 	const title = document.createElement('div')
 	title.id = 'title_orange'
@@ -229,8 +241,8 @@ function recording(container,audSplash){
 	splash.appendChild(titleContainer)
 
 	const title = document.createElement('div')
-	title.id = 'title_orange'
-	title.textContent = 'Recording...'
+	title.id = 'title_record'
+	title.textContent = `• Recording...`
 	titleContainer.appendChild(title)
 
 	title.style.cursor = "pointer"
