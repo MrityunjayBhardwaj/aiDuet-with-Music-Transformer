@@ -2,6 +2,8 @@
 
 $topMargin: 35px;
 
+
+
 #splash {
 	position: absolute;
 	height: 100%;
@@ -18,6 +20,8 @@ $topMargin: 35px;
 		opacity: 0;
 		pointer-events: none;
 	}
+
+	
 
 	#learnMore {
 		margin-top: $topMargin;
@@ -41,6 +45,29 @@ $topMargin: 35px;
 			letter-spacing: 1px;
 			font-weight: 300;
 		}
+		#title_orange {
+			line-height: 60px;
+			font-size: 55px;
+			letter-spacing: 1px;
+			font-weight: 300;
+			color: $orange;
+
+		}
+		#title_record {
+			line-height: 60px;
+			font-size: 55px;
+			letter-spacing: 1px;
+			font-weight: 300;
+			color: red;
+			animation: pulsing-fade 1.2s ease-in-out infinite;
+
+		}
+		
+		@keyframes pulsing-fade {
+		0%,100% { opacity: 0 }
+		50% { opacity: 1 }
+		}
+
 
 		#subTitle, #howItWorks {
 			margin-top: $topMargin;
@@ -85,6 +112,7 @@ $topMargin: 35px;
 		$loaderWidth: 200px;
 		$loaderHeight: 60px;
 
+		$audioLoaderWidth: 200px;
 		#loader {
 			position: relative;
 			margin-top: $topMargin;
@@ -136,6 +164,7 @@ $topMargin: 35px;
 					height: 100%;
 					color: $orange;
 
+
 					$imgWidth: 40px;
 					$margin : 52px;
 
@@ -166,6 +195,90 @@ $topMargin: 35px;
 				font-weight: normal;
 			}
 		}
+
+		#audioLoader {
+			position: relative;
+			margin-top: $topMargin;
+			background-color: black;
+			border: 2px solid $orange;
+			width: $audioLoaderWidth;
+			height: $loaderHeight;
+			margin-left: auto;
+			margin-right: auto;
+			text-transform: uppercase;
+
+			&.clickable {
+				cursor: pointer;
+
+				transition: transform 0.1s;
+
+				&:hover {
+					transform: scale(1.1);
+				}
+
+				#fillText:active {
+					color: black!important;
+					background-color: $orange;
+
+					#piano {
+						filter: brightness(0);
+					}
+				}
+			}
+
+			#loaderText {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				color: black;
+				background-color: $orange;
+			}
+
+			#fill {
+				position: absolute;
+				height: 100%;
+				width: 0%;
+				overflow: hidden;
+				background-color: black;
+
+
+				#fillText {
+					width: $loaderWidth;
+					height: 100%;
+					color: $orange;
+
+					$imgWidth: 40px;
+					$margin : 30px;
+
+					* {
+						position: absolute;
+						top: 0px;
+					}
+
+					#play {
+						right: $margin;
+					}
+
+					#voice {
+						left: $margin;
+						width: $imgWidth;
+						height: 100%;
+						background-image : url(../images/yellow_play_triangle.svg);
+						background-position: center center;
+						background-repeat: no-repeat;
+					}
+				}
+			}
+
+			#loaderText, #fillText {
+				line-height: $loaderHeight;
+				font-size: 22px;
+				text-align: center;
+				font-weight: normal;
+			}
+		}
+
+
 	}
 
 	#buildWith {
@@ -363,4 +476,80 @@ $topMargin: 35px;
 			}
 		}
 	}
+}
+
+
+.button {
+  -webkit-appearance: none;
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* .button[disabled] {
+  opacity: 0.5;
+  pointer-events: none;
+} */
+
+.button > .loading {
+  display: none;
+}
+
+.button.working {
+  background: var(--working);
+  transition: background-color 0s ease-out;
+  opacity: 1;
+  color: black;
+}
+
+/* .working > .text {
+  display: none;
+} */
+
+.working > .loading {
+  display: inline-block !important;
+  animation: pulsing-fade 1.2s ease-in-out infinite;
+}
+
+.button:hover {
+  transition: background-color 0.4s ease-out;
+  background: var(--hover);
+}
+
+.button.player {
+  background: white;
+  color: var(--bottom);
+  width: 180px;
+  transition: opacity 0.4s ease-out;
+  margin: 0;
+}
+
+.button.player:nth-child(1) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.button.player:nth-child(2) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.button.player:not(.active) {
+  opacity: 0.5;
+}
+.button.player:not(.active):hover {
+  opacity: 1;
+}
+
+.button.save {
+  display: block;
+  width: 140px;
+  margin: 0 auto;
+}
+
+input[type="file"] {
+	width: 0;
+	height: 0;
+	opacity: 0;
+	cursor: pointer;
+	display: none;
 }
