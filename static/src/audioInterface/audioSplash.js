@@ -7,7 +7,6 @@ import {AI} from 'ai/AI'
 import { AIRaw } from 'ai/AIRaw'
 import Tone from 'Tone/core/Tone'
 
-
 // TODO: use it through modules instaed of putting it into the main index html
 // import model from 'transcribeAI/transcribe'
 
@@ -93,13 +92,16 @@ class audioSplash extends events.EventEmitter{
 
 						console.log('finished playing note sequences')
 
+						let isMusicGenerated = 0;
+
 						// exporting the generated note sequence to the backend...
 						this.aiRaw.submitNS(ns, this.bound_load).then(()=>{
+							isMusicGenerated = 1;
 							cElement.emit('finishedGenerating')
 						})
 
 						// waiting for the last note bars to leave the screen before invoking the generateMuisc event...
-						setTimeout(()=>cElement.emit('generateMusic'), seqDueration)
+						setTimeout(()=>{if(!isMusicGenerated)cElement.emit('generateMusic')}, seqDueration + 1000)
 						
 					})
 					
@@ -121,11 +123,12 @@ class audioSplash extends events.EventEmitter{
 
 				// console.log(i, len, now, len, ns.notes.length)
 			})
-			setTimeout(()=>{resolve(Math.floor(len*100*1))}, )
+			setTimeout(()=>{resolve(Math.floor(len*10*1))}, )
 		})
 	}
 
     load(response){
+
 		response.tracks[1].notes.forEach((note, i) => {
 			const now = Math.max(Tone.now() + 0.05, this.last_note)
 			if (note.noteOn + now > this._aiEndTime){
@@ -136,13 +139,19 @@ class audioSplash extends events.EventEmitter{
 				this.emit('keyUp', note.midi, note.noteOff + now, true)
 			}
 
-			if (i === (response.tracks[1].notes.length -1)){
-			
-				console.log('finished playing the generated music on the  ')
-				this.emit('finishedPlayingGenMusic', response.tracks[1])
-
-			}
 		})
+
+
+		const seqDuration = response.duration* response.tracks[1].notes.length*10;
+
+		setTimeout(()=>{
+
+			console.log('finished playing the generated music on the  ')
+			this.emit('finishedPlayingGenMusic', response)
+
+		}, seqDuration)
+
+
 	}
 
 	get loaded(){

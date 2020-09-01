@@ -20,6 +20,7 @@ import {Sound} from 'sound/Sound'
 import {Glow} from 'interface/Glow'
 import {Splash} from 'interface/Splash'
 import {audioSplash} from 'audioInterface/audioSplash'
+import {finalSplash} from 'finalInterface/finalSplash'
 import {About} from 'interface/About'
 import {Tutorial} from 'ai/Tutorial'
 import 'babel-polyfill'
@@ -104,6 +105,8 @@ function audio(){
 
 	audSplash.on('transcribing', () => {
 	// TODO: change the ui appropriately
+
+	console.log('started transcribing')
 		transcribingSplash = transcribing(document.body);
 
 	})
@@ -126,7 +129,8 @@ function audio(){
 
 	audSplash.on('finishedGenerating', ()=>{
 
-		document.body.removeChild(generatingMusicSplash);
+		if(generatingMusicSplash)
+			document.body.removeChild(generatingMusicSplash);
 	})
 
 	audSplash.on('finishedRecording', ()=>{
@@ -134,6 +138,15 @@ function audio(){
 		document.body.removeChild(recordingSplash)
 
 		console.log('finished rec', recordingSplash)
+
+	})
+
+	audSplash.on('finishedPlayingGenMusic', (genMidi)=>{
+
+		// if (generatingMusic)
+		// 	document.body.removeChild(generatingMusicSplash);
+
+		const finSplash = new finalSplash(document.body, genMidi);
 
 	})
 
@@ -155,7 +168,7 @@ function audio(){
 	})
 }
 
-/////////////// Transcribing /////////////////
+/////////////// Middle states /////////////////
 
 function transcribing(container){
 	const splash = document.createElement('div')
@@ -198,7 +211,7 @@ function generatingMusic(container){
 	const subTitle = document.createElement('div')
 	subTitle.id = 'subTitle'
 	titleContainer.appendChild(subTitle)
-	subTitle.textContent = 'your robots are creating new piece of music for you.. please wait, its going to take a while.'
+	subTitle.textContent = 'your robots are creating new piece of music for you.. please wait, its going to take a white.'
 
 	// TODO: maybe add a loading animation loop
 
@@ -234,8 +247,6 @@ function recording(container,audSplash){
 
 	return splash;
 }
-
-
 
 
 /////////////// AI ///////////////////
@@ -282,3 +293,4 @@ function tuts(keyboard, sound, glow){
 
 	return tutorial;
 }
+
