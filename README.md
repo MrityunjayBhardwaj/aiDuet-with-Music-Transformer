@@ -4,6 +4,7 @@ A piano that responds to you.
 
 ![](./assets/AI_duet_with_Onset_and_Frames_and_Transformer_model.gif)
 
+### Contributers: ![Asiya Lazareva ](https://github.com/alazareva), ![ruiguo-bio](https://github.com/ruiguo-bio) and ![Mrityunjay](#)
 ## About
 
 This is the port of ai-duet experiment by google: https://github.com/googlecreativelab/aiexperiments-ai-duet where, instead of using performanceRNN we are using ![Music Transformer](https://magenta.tensorflow.org/music-transformer)
